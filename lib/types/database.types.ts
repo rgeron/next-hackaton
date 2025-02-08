@@ -1,5 +1,5 @@
 // User table type
-type User = {
+export type User = {
   id: string; // UUID, PRIMARY KEY
   email: string; // TEXT, UNIQUE, NOT NULL
   full_name: string; // TEXT, NOT NULL
@@ -24,7 +24,7 @@ type User = {
 };
 
 // Team table type
-type Team = {
+export type Team = {
   id: number; // SERIAL, PRIMARY KEY
   name: string; // TEXT, NOT NULL
   description: string | null; // TEXT
