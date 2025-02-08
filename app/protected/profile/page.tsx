@@ -1,3 +1,4 @@
+import { getUserProfile } from "@/app/actions/profile";
 import { getUserTeam } from "@/app/actions/team";
 import { CreateTeamForm } from "@/components/create-team-form";
 import { ProfileForm } from "@/components/profile-form";
@@ -6,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ProfilePage() {
   const team = await getUserTeam();
-  console.log("this is the team", team);
+  const { data: profile } = await getUserProfile();
 
   return (
     <div className="container mx-auto p-4">
@@ -16,7 +17,7 @@ export default async function ProfilePage() {
             <CardTitle>Complete Your Profile</CardTitle>
           </CardHeader>
           <CardContent>
-            <ProfileForm />
+            <ProfileForm initialData={profile} />
           </CardContent>
         </Card>
 

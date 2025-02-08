@@ -80,3 +80,21 @@ export async function updateUserProfile(userData: UserProfile) {
   if (error) return { error: error.message };
   return { data };
 }
+
+export async function getUserProfile() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("users")
+    .select()
+    .eq("id", user.id)
+    .single();
+
+  if (error) return { error: error.message };
+  return { data };
+}

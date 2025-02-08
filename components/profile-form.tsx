@@ -70,10 +70,10 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export function ProfileForm() {
+export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
+    defaultValues: props.initialData || {
       full_name: "",
       school: "X",
       bio: "",
