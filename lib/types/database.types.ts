@@ -30,12 +30,16 @@ export type Team = {
   description: string | null; // TEXT
   creator_id: string; // UUID, REFERENCES users(id)
   created_at: Date; // TIMESTAMPTZ, DEFAULT NOW()
+  project_type: "physical product" | "website" | "mobile app" | "software"; // ENUM, NOT NULL
+  looking_for: string[]; // TEXT[], NOT NULL
   members: {
-    // JSONB
-    id: number;
-    user_id: string; // UUID (references users.id)
-    role: string | null;
+    user_id: string; // UUID, REFERENCES users(id)
+    role: string; // One of JOB_OPTIONS
     joined_at: Date;
-    is_leader: boolean;
-  }[];
+  }[]; // JSONB, NOT NULL
+  pending_invites: {
+    email: string;
+    role: string; // One of JOB_OPTIONS
+    invited_at: Date;
+  }[]; // JSONB, NOT NULL, DEFAULT []
 };

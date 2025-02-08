@@ -6,8 +6,11 @@ export type TeamCreate = {
   name: string;
   description: string;
   looking_for?: string[];
-  project_type: "startup" | "association" | "student_project";
-  max_members: number;
+  project_type: "physical product" | "website" | "mobile app" | "software";
+  pending_invites?: {
+    email: string;
+    role: string;
+  }[];
 };
 
 export async function createTeam(teamData: TeamCreate) {
@@ -25,7 +28,17 @@ export async function createTeam(teamData: TeamCreate) {
       {
         ...teamData,
         creator_id: user.id,
-        members: [user.id],
+        members: [
+          {
+            user_id: user.id,
+            role: teamData.looking_for?.[0] || "Project Lead",
+            joined_at: new Date(),
+          },
+        ],
+        pending_invites: (teamData.pending_invites || []).map((invite) => ({
+          ...invite,
+          invited_at: new Date(),
+        })),
       },
     ])
     .select()
@@ -44,6 +57,8 @@ export async function createTeam(teamData: TeamCreate) {
     await supabase.from("teams").delete().eq("id", team.id);
     return { error: userError.message };
   }
+
+  // TODO: Send email invites to pending_invites
 
   return { data: team };
 }
