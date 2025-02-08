@@ -1,7 +1,7 @@
 import { getUserTeam } from "@/app/actions/team";
 import { CreateTeamForm } from "@/components/create-team-form";
 import { ProfileForm } from "@/components/profile-form";
-import { TeamInfo } from "@/components/team-info";
+import { TeamInfo } from "@/components/team-info-profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {

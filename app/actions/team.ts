@@ -26,9 +26,6 @@ export async function getUserTeam() {
     .from("teams")
     .select("*")
     .eq("creator_id", user.id);
-
-  console.log("team query result:", { teams, error });
-
   return teams?.[0] || null;
 }
 
