@@ -1,9 +1,9 @@
 import { signOutAction } from "@/app/actions";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { createClient } from "@/utils/supabase/server";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -50,9 +50,17 @@ export default async function AuthButton() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      <div className="flex items-center gap-4 mr-4">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/protected/search">Search Teams</Link>
+        </Button>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/protected/profile">Complete Profile</Link>
+        </Button>
+      </div>
+      <span className="text-muted-foreground">{user.email}</span>
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+        <Button type="submit" variant="outline" size="sm">
           Sign out
         </Button>
       </form>
