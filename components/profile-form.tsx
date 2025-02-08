@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUserProfile } from "@/app/actions";
+import { updateUserProfile } from "@/app/actions/profile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

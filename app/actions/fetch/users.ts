@@ -1,0 +1,82 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+
+export async function getUsers(filters?: {
+  school?: "X" | "HEC" | "ENSAE" | "Centrale" | "ENSTA";
+  has_team?: boolean;
+  skills?: string[];
+}) {
+  const supabase = createClient();
+
+  let query = supabase.from("users").select("*");
+
+  if (filters?.school) {
+    query = query.eq("school", filters.school);
+  }
+
+  if (filters?.has_team !== undefined) {
+    query = query.eq("has_team", filters.has_team);
+  }
+
+  if (filters?.skills?.length) {
+    query = query.contains("skills", filters.skills);
+  }
+
+  const { data, error } = await query;
+
+  if (error) return { error: error.message };
+  return { data };
+}
+
+export async function getUser(userId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("users")
+    .select(
+      `
+      *,
+      teams!team_members(id, name, description, project_type),
+      applications(id, team_id, message, status, teams(id, name, description))
+    `
+    )
+    .eq("id", userId)
+    .single();
+
+  if (error) return { error: error.message };
+  return { data };
+}
+
+export async function getCurrentUser() {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  return getUser(user.id);
+}
+
+export async function getUserApplications() {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("applications")
+    .select(
+      `
+      *,
+      teams(id, name, description, project_type, members)
+    `
+    )
+    .eq("user_id", user.id);
+
+  if (error) return { error: error.message };
+  return { data };
+}
