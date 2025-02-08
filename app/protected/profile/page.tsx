@@ -14,6 +14,7 @@ import {
 
 export default async function ProfilePage() {
   const team = await getUserTeam();
+  console.log("this is the team", team);
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">

@@ -21,14 +21,15 @@ export async function getUserTeam() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Get user's team - either as creator or member
-  const { data: team } = await supabase
+  // Get user's team - check creator_id first
+  const { data: teams, error } = await supabase
     .from("teams")
     .select("*")
-    .or(`creator_id.eq.${user.id},members[].user_id.eq.${user.id}`)
-    .single();
+    .eq("creator_id", user.id);
 
-  return team || null;
+  console.log("team query result:", { teams, error });
+
+  return teams?.[0] || null;
 }
 
 export async function createTeam(teamData: TeamCreate) {
