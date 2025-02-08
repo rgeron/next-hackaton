@@ -13,6 +13,24 @@ export type TeamCreate = {
   }[];
 };
 
+export async function getUserTeam() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // Get user's team - either as creator or member
+  const { data: team } = await supabase
+    .from("teams")
+    .select("*")
+    .or(`creator_id.eq.${user.id},members[].user_id.eq.${user.id}`)
+    .single();
+
+  return team || null;
+}
+
 export async function createTeam(teamData: TeamCreate) {
   const supabase = await createClient();
 

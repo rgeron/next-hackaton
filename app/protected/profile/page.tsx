@@ -1,3 +1,4 @@
+import { getUserTeam } from "@/app/actions/team";
 import { CreateTeamForm } from "@/components/create-team-form";
 import { ProfileForm } from "@/components/profile-form";
 import { TeamInfo } from "@/components/team-info";
@@ -10,24 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { createClient } from "@/utils/supabase/server";
-
-async function getUserTeam() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  // First check if user is a member of any team
-  const { data: teams } = await supabase
-    .from("teams")
-    .select("*")
-    .contains("members", [{ user_id: user.id }]);
-
-  return teams?.[0] || null;
-}
 
 export default async function ProfilePage() {
   const team = await getUserTeam();
