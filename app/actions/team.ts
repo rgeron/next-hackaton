@@ -47,7 +47,7 @@ export async function createTeam(teamData: TeamCreate) {
         members: [
           {
             user_id: user.id,
-            role: teamData.looking_for?.[0] || "Project Lead",
+            role: "Project Lead",
             joined_at: new Date(),
           },
         ],

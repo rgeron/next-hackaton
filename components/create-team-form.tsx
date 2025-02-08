@@ -2,7 +2,6 @@
 
 import { createTeam } from "@/app/actions/team";
 import { Button } from "@/components/ui/button";
-import { DialogClose } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -128,12 +127,6 @@ export function CreateTeamForm() {
             </div>
           </div>
         </div>
-
-        <DialogClose asChild>
-          <Button className="w-full" variant="outline">
-            Close
-          </Button>
-        </DialogClose>
       </div>
     );
   }
