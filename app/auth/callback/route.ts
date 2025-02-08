@@ -1,3 +1,4 @@
+import { createUserProfile } from "@/app/actions/profile";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
@@ -12,7 +13,15 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (user) {
+      // Try to create profile for newly confirmed user
+      await createUserProfile(user.email!);
+    }
   }
 
   if (redirectTo) {

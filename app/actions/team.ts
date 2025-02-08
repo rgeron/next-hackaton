@@ -11,7 +11,7 @@ export type TeamCreate = {
 };
 
 export async function createTeam(teamData: TeamCreate) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -52,7 +52,7 @@ export async function updateTeam(
   teamId: string,
   teamData: Partial<TeamCreate>
 ) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -81,7 +81,7 @@ export async function updateTeam(
 }
 
 export async function deleteTeam(teamId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

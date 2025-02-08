@@ -8,7 +8,7 @@ export type Application = {
 };
 
 export async function applyToTeam(application: Application) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -57,7 +57,7 @@ export async function respondToApplication(
   applicationId: string,
   accept: boolean
 ) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

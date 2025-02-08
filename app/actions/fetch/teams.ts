@@ -7,7 +7,7 @@ export async function getTeams(filters?: {
   has_space?: boolean;
   looking_for?: string[];
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   let query = supabase.from("teams").select("*");
 
@@ -30,7 +30,7 @@ export async function getTeams(filters?: {
 }
 
 export async function getTeam(teamId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("teams")
@@ -49,7 +49,7 @@ export async function getTeam(teamId: string) {
 }
 
 export async function getTeamApplications(teamId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

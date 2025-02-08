@@ -14,37 +14,56 @@ export type UserProfile = {
 };
 
 export async function createUserProfile(email: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
+  console.log("Creating profile for email:", email);
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log("Auth user:", user);
+  if (!user) return { error: "Not authenticated" };
+
+  // First check if user exists
   const { data: existingUser, error: fetchError } = await supabase
     .from("users")
     .select()
-    .eq("email", email)
+    .eq("id", user.id)
     .single();
 
-  if (existingUser) return { error: "User already exists" };
+  // If user already exists, just return success
+  if (existingUser) return { data: existingUser };
 
-  const { data, error } = await supabase
-    .from("users")
-    .insert([
-      {
-        email,
-        full_name: "",
-        school: "X",
-        has_team: false,
-        links: { github: null, linkedin: null },
-        applications: [],
-      },
-    ])
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .insert([
+        {
+          id: user.id,
+          email,
+          full_name: "",
+          school: "",
+          has_team: false,
+          links: { github: null, linkedin: null },
+          applications: [],
+          skills: [],
+        },
+      ])
+      .select()
+      .single();
 
-  if (error) return { error: error.message };
-  return { data };
+    if (error) {
+      console.error("Error creating profile:", error);
+      return { error: error.message };
+    }
+    return { data };
+  } catch (e) {
+    console.error("Exception creating profile:", e);
+    return { error: "Failed to create profile" };
+  }
 }
 
 export async function updateUserProfile(userData: UserProfile) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

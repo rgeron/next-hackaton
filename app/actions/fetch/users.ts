@@ -7,7 +7,7 @@ export async function getUsers(filters?: {
   has_team?: boolean;
   skills?: string[];
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   let query = supabase.from("users").select("*");
 
@@ -30,7 +30,7 @@ export async function getUsers(filters?: {
 }
 
 export async function getUser(userId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("users")
@@ -49,7 +49,7 @@ export async function getUser(userId: string) {
 }
 
 export async function getCurrentUser() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -60,7 +60,7 @@ export async function getCurrentUser() {
 }
 
 export async function getUserApplications() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
