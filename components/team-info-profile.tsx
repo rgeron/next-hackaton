@@ -1,23 +1,82 @@
 "use client";
 
+import { deleteTeam } from "@/app/actions/team";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Team } from "@/lib/types/database.types";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 export function TeamInfo({ team }: { team: Team }) {
+  const router = useRouter();
+  const isTeamCreator =
+    team.creator_id ===
+    team.members.find((m) => m.user_id === team.creator_id)?.user_id;
+
   const copyInviteLink = () => {
     const inviteLink = `${window.location.origin}/invite/${team.id}`;
     navigator.clipboard.writeText(inviteLink);
     toast.success("Invite link copied to clipboard!");
   };
 
+  const handleDeleteTeam = async () => {
+    if (!team?.id) {
+      toast.error("Team ID not found");
+      return;
+    }
+
+    const result = await deleteTeam(team.id);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Team deleted successfully");
+    router.refresh();
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Your Team</h2>
-        <Button onClick={copyInviteLink} variant="outline" size="sm">
-          Copy Invite Link
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={copyInviteLink} variant="outline" size="sm">
+            Copy Invite Link
+          </Button>
+          {isTeamCreator && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Delete Team
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your team and remove all members.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteTeam}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">

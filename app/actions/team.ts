@@ -111,7 +111,7 @@ export async function updateTeam(
   return { data };
 }
 
-export async function deleteTeam(teamId: string) {
+export async function deleteTeam(teamId: number) {
   const supabase = await createClient();
 
   const {
@@ -129,11 +129,16 @@ export async function deleteTeam(teamId: string) {
   if (!team) return { error: "Team not found" };
   if (team.creator_id !== user.id) return { error: "Not authorized" };
 
+  type TeamMember = { user_id: string; role: string; joined_at: Date };
+
   // Update all team members has_team status
   const { error: userError } = await supabase
     .from("users")
     .update({ has_team: false })
-    .in("id", team.members);
+    .in(
+      "id",
+      (team.members as TeamMember[]).map((m) => m.user_id)
+    );
 
   if (userError) return { error: userError.message };
 
