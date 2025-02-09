@@ -10,7 +10,7 @@ import { TeamInfo } from "./team-info-profile";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 type Application = {
-  id: string;
+  id: number;
   user_id: string;
   message: string;
   status: string;
@@ -39,7 +39,7 @@ export function TeamSection({ team }: { team: Team | null }) {
   }, [team]);
 
   const handleApplicationResponse = async (
-    applicationId: string,
+    applicationId: number,
     accept: boolean
   ) => {
     const { error } = await respondToApplication(applicationId, accept);

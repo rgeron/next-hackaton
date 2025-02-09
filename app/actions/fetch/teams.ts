@@ -2,6 +2,18 @@
 
 import { createClient } from "@/utils/supabase/server";
 
+type Application = {
+  id: number;
+  user_id: string;
+  message: string;
+  status: string;
+  users: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+};
+
 export async function getTeams(filters?: {
   project_type?: "startup" | "association" | "student_project";
   has_space?: boolean;
@@ -66,16 +78,41 @@ export async function getTeamApplications(teamId: string) {
   if (!team) return { error: "Team not found" };
   if (team.creator_id !== user.id) return { error: "Not authorized" };
 
+  // Get all users and filter in memory
   const { data, error } = await supabase
-    .from("applications")
-    .select(
-      `
-      *,
-      users(id, full_name, email)
-    `
-    )
-    .eq("team_id", teamId);
+    .from("users")
+    .select("id, full_name, email, applications");
+
+  console.log("Query result:", { data, error });
 
   if (error) return { error: error.message };
-  return { data };
+
+  // Transform the data to match the expected format
+  const applications = data
+    ?.filter((user) =>
+      user.applications?.some(
+        (app: any) =>
+          app.post_id === parseInt(teamId) && app.status === "pending"
+      )
+    )
+    .map((user) => {
+      const application = user.applications?.find(
+        (app: any) =>
+          app.post_id === parseInt(teamId) && app.status === "pending"
+      );
+
+      return {
+        id: application.id,
+        user_id: user.id,
+        message: application.message,
+        status: application.status,
+        users: {
+          id: user.id,
+          full_name: user.full_name,
+          email: user.email,
+        },
+      };
+    }) as Application[];
+
+  return { data: applications || [] };
 }
