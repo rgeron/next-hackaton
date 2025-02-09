@@ -1,41 +1,20 @@
 "use client";
 
 import { Team } from "@/lib/types/database.types";
-import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
-export function TeamInfoSearch({ team }: { team: Team }) {
-  const [hasTeam, setHasTeam] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkUserTeam = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data } = await supabase
-          .from("users")
-          .select("has_team")
-          .eq("id", user.id)
-          .single();
-
-        setHasTeam(!!data?.has_team);
-      }
-      setIsLoading(false);
-    };
-
-    checkUserTeam();
-  }, []);
-
+export function TeamInfoSearch({
+  team,
+  hasTeam,
+}: {
+  team: Team;
+  hasTeam: boolean;
+}) {
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4 border-2 rounded-md">
       <div>
-        <h2 className="text-xl font-semibold">{team.name}</h2>
-        <p className="mt-2 text-muted-foreground">{team.description}</p>
+        <h2 className="text-lg font-semibold">Team: {team.name}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Project: {team.description}</p>
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
@@ -63,11 +42,7 @@ export function TeamInfoSearch({ team }: { team: Team }) {
           <span className="ml-2">{team.members.length} members</span>
         </div>
 
-        {!hasTeam && (
-          <Button className="w-full" disabled={isLoading}>
-            Ask to Join
-          </Button>
-        )}
+        {!hasTeam && <Button className="w-full">Ask to Join</Button>}
       </div>
     </div>
   );

@@ -1,8 +1,21 @@
 import { getTeams } from "@/app/actions/fetch/teams";
 import { TeamInfoSearch } from "@/components/team-info-search";
+import { createClient } from "@/utils/supabase/server";
 
 export async function SearchPage() {
-  const { data: teams, error } = await getTeams();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [{ data: teams, error }, { data: userData }] = await Promise.all([
+    getTeams(),
+    user
+      ? supabase.from("users").select("has_team").eq("id", user.id).single()
+      : { data: null },
+  ]);
+
+  const hasTeam = !!userData?.has_team;
 
   return (
     <div className="w-full max-w-6xl mx-auto py-8">
@@ -23,9 +36,9 @@ export async function SearchPage() {
           {teams.map((team) => (
             <div
               key={team.id}
-              className="bg-card rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              className="bg-card"
             >
-              <TeamInfoSearch team={team} />
+              <TeamInfoSearch team={team} hasTeam={hasTeam} />
             </div>
           ))}
         </div>
