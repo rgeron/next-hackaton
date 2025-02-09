@@ -26,7 +26,7 @@ export function TeamSection({ team }: { team: Team | null }) {
 
   useEffect(() => {
     if (team) {
-      getTeamApplications(team.id).then(({ data, error }) => {
+      getTeamApplications(team.id.toString()).then(({ data, error }) => {
         if (error) {
           toast.error(error);
           return;
