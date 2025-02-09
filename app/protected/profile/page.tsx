@@ -1,9 +1,8 @@
 import { getUserProfile } from "@/app/actions/profile";
 import { getUserTeam } from "@/app/actions/team";
-import { CreateTeamForm } from "@/components/create-team-form";
 import { ProfileForm } from "@/components/profile-form";
-import { TeamInfo } from "@/components/team-info-profile";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TeamSection } from "@/components/team-section";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function ProfilePage() {
   const team = await getUserTeam();
@@ -11,29 +10,20 @@ export default async function ProfilePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Complete Your Profile</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProfileForm initialData={profile} />
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="profile">My Profile</TabsTrigger>
+          <TabsTrigger value="team">My Team</TabsTrigger>
+        </TabsList>
 
-        {team ? (
-          <TeamInfo team={team} />
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Your Team</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CreateTeamForm />
-            </CardContent>
-          </Card>
-        )}
-      </div>
+        <TabsContent value="profile" className="space-y-4">
+          <ProfileForm initialData={profile} />
+        </TabsContent>
+
+        <TabsContent value="team" className="space-y-4">
+          <TeamSection team={team} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
