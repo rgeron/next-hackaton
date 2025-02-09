@@ -1,7 +1,18 @@
 "use client";
 
+import { applyToTeam } from "@/app/actions/application";
 import { Team } from "@/lib/types/database.types";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Textarea } from "./ui/textarea";
 
 export function TeamInfoSearch({
   team,
@@ -10,11 +21,49 @@ export function TeamInfoSearch({
   team: Team;
   hasTeam: boolean;
 }) {
+  const [message, setMessage] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      console.log("Client: Starting application submission", {
+        teamId: team.id,
+        teamIdType: typeof team.id,
+        message: message,
+      });
+
+      const { error, data } = await applyToTeam({
+        team_id: team.id,
+        message,
+      });
+
+      console.log("Client: Application response", { error, data });
+
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success("Application sent successfully!");
+      setIsOpen(false);
+      setMessage("");
+    } catch (e) {
+      console.error("Client: Application error", e);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-4 border-2 rounded-md">
       <div>
         <h2 className="text-lg font-semibold">Team: {team.name}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Project: {team.description}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Project: {team.description}
+        </p>
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
@@ -42,7 +91,32 @@ export function TeamInfoSearch({
           <span className="ml-2">{team.members.length} members</span>
         </div>
 
-        {!hasTeam && <Button className="w-full">Ask to Join</Button>}
+        {!hasTeam && (
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full">Ask to Join</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Join {team.name}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <Textarea
+                  placeholder="Tell us why you'd like to join this team..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                <Button
+                  className="w-full"
+                  onClick={handleSubmit}
+                  disabled={!message.trim() || isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Send Application"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
