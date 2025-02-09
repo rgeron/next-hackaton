@@ -114,12 +114,14 @@ export async function respondToApplication(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Get application details from the user's applications array
-  const { data: applicantData } = await supabase
+  // Get all users and find the one with the matching application
+  const { data: users } = await supabase
     .from("users")
-    .select("applications, id")
-    .eq("applications[].id", applicationId)
-    .single();
+    .select("id, applications");
+
+  const applicantData = users?.find((user) =>
+    user.applications?.some((app: UserApplication) => app.id === applicationId)
+  );
 
   if (!applicantData) return { error: "Application not found" };
 
