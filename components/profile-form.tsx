@@ -73,14 +73,14 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: props.initialData || {
-      full_name: "",
-      school: "X",
-      bio: "",
-      skills: [],
+    defaultValues: {
+      full_name: props.initialData?.full_name || "",
+      school: props.initialData?.school || "X",
+      bio: props.initialData?.bio || "",
+      skills: props.initialData?.skills || [],
       links: {
-        github: "",
-        linkedin: "",
+        github: props.initialData?.links?.github || "",
+        linkedin: props.initialData?.links?.linkedin || "",
       },
     },
   });
