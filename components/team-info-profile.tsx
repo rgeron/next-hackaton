@@ -74,15 +74,6 @@ export function TeamInfo({ team }: { team: Team }) {
           <Button onClick={copyInviteLink} variant="outline" size="sm">
             Copy Invite Link
           </Button>
-          {isTeamCreator && (
-            <Button
-              onClick={() => setIsEditing(!isEditing)}
-              variant="outline"
-              size="sm"
-            >
-              {isEditing ? "Cancel Edit" : "Edit Team"}
-            </Button>
-          )}
         </div>
       </div>
 
@@ -143,10 +134,6 @@ export function TeamInfo({ team }: { team: Team }) {
                 placeholder="Separate roles with commas"
                 className="mt-1"
               />
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <Button onClick={handleUpdateTeam}>Save Changes</Button>
             </div>
           </div>
         ) : (
@@ -230,7 +217,20 @@ export function TeamInfo({ team }: { team: Team }) {
       </div>
 
       {isTeamCreator && (
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-between items-center pt-4">
+          {isEditing ? (
+            <Button onClick={handleUpdateTeam} variant="default">
+              Save Changes
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setIsEditing(true)}
+              variant="outline"
+              size="sm"
+            >
+              Edit Team
+            </Button>
+          )}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm">
