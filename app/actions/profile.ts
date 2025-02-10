@@ -44,9 +44,10 @@ export async function createUserProfile(email: string) {
           full_name: "",
           school: "X",
           has_team: false,
+          is_team_creator: false,
+          bio: null,
           phone_number: null,
           links: { github: null, linkedin: null },
-          applications: [],
           skills: [],
         },
       ])

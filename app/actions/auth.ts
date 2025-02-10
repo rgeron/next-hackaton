@@ -35,7 +35,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-up", error.message);
   }
 
-  // Create user profile after successful signup
+  // Create user profile in the db after successful signup
   const { error: profileError } = await createUserProfile(email);
   console.log("Profile creation result:", { profileError });
 
