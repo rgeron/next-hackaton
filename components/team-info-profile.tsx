@@ -48,35 +48,9 @@ export function TeamInfo({ team }: { team: Team }) {
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
-        <div className="flex gap-2">
-          <Button onClick={copyInviteLink} variant="outline" size="sm">
-            Copy Invite Link
-          </Button>
-          {isTeamCreator && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  Delete Team
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your team and remove all members.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteTeam}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
+        <Button onClick={copyInviteLink} variant="outline" size="sm">
+          Copy Invite Link
+        </Button>
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
@@ -155,6 +129,33 @@ export function TeamInfo({ team }: { team: Team }) {
           </div>
         )}
       </div>
+
+      {isTeamCreator && (
+        <div className="flex justify-center pt-4">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                Delete Team
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your team and remove all members.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteTeam}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
     </div>
   );
 }
