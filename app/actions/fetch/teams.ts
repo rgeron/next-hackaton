@@ -116,3 +116,33 @@ export async function getTeamApplications(teamId: string) {
 
   return { data: applications || [] };
 }
+
+export async function getTeamInvitations() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("teams")
+    .select("id, name, pending_invites")
+    .contains("pending_invites", [{ user_id: user.id }]);
+
+  if (error) return { error: error.message };
+
+  // Transform the data to a more usable format
+  const invites = data?.flatMap((team) =>
+    team.pending_invites
+      .filter((invite: any) => invite.user_id === user.id)
+      .map((invite: any) => ({
+        team_id: team.id,
+        team_name: team.name,
+        role: invite.role,
+        invited_at: invite.invited_at,
+      }))
+  );
+
+  return { data: invites || [] };
+}
