@@ -5,9 +5,10 @@ import { getTeamApplications } from "@/app/actions/fetch/teams";
 import { Team } from "@/lib/types/database.types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ApplicationsToYourTeam } from "./applications-to-your-team";
 import { CreateTeamForm } from "./create-team-form";
 import { TeamInfo } from "./team-info-profile";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { TeamMemberInfo } from "./team-member-info";
 
 type Application = {
   id: number;
@@ -55,67 +56,20 @@ export function TeamSection({ team }: { team: Team | null }) {
   };
 
   if (!team) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Create Your Team</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CreateTeamForm />
-        </CardContent>
-      </Card>
-    );
+    return <CreateTeamForm />;
   }
 
   return (
-    <div className="border-2 p-4 rounded-lg">
-      <div>
-        <TeamInfo team={team} />
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <TeamInfo team={team} />
+        </div>
+        <div>
+          <TeamMemberInfo team={team} />
+        </div>
       </div>
-
-      {applications.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Team Applications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {applications.map((application) => (
-                <div
-                  key={application.id}
-                  className="flex items-center justify-between p-4 rounded-lg border"
-                >
-                  <div className="space-y-1">
-                    <p className="font-medium">{application.users.full_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {application.users.email}
-                    </p>
-                    <p className="text-sm mt-2">{application.message}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        handleApplicationResponse(application.id, true)
-                      }
-                      className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleApplicationResponse(application.id, false)
-                      }
-                      className="px-3 py-1 text-sm bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <ApplicationsToYourTeam team={team} />
     </div>
   );
 }
