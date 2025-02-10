@@ -52,7 +52,10 @@ export default async function AuthButton() {
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-4 mr-4">
         <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/search">Search</Link>
+          <Link href="/protected/search-profile">Search Profiles</Link>
+        </Button>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/protected/search-team">Search Teams</Link>
         </Button>
         <Button asChild variant="ghost" size="sm">
           <Link href="/protected/team">Team</Link>

@@ -34,10 +34,7 @@ export async function SearchPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {teams.map((team) => (
-            <div
-              key={team.id}
-              className="bg-card"
-            >
+            <div key={team.id} className="bg-card">
               <TeamInfoSearch team={team} hasTeam={hasTeam} />
             </div>
           ))}

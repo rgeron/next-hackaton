@@ -92,3 +92,9 @@ export async function getUsersByIds(userIds: string[]) {
   if (error) return { error: error.message };
   return { data };
 }
+
+export async function getUsersWithoutTeam() {
+  const { data, error } = await getUsers({ has_team: false });
+  if (error) return [];
+  return data;
+}
