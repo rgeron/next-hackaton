@@ -1,6 +1,5 @@
 "use client";
 
-import { respondToApplication } from "@/app/actions/application";
 import { getTeamApplications } from "@/app/actions/fetch/teams";
 import { Team } from "@/lib/types/database.types";
 import { useEffect, useState } from "react";
@@ -38,22 +37,6 @@ export function TeamSection({ team }: { team: Team | null }) {
       });
     }
   }, [team]);
-
-  const handleApplicationResponse = async (
-    applicationId: number,
-    accept: boolean
-  ) => {
-    const { error } = await respondToApplication(applicationId, accept);
-    if (error) {
-      toast.error(error);
-      return;
-    }
-
-    toast.success(
-      `Application ${accept ? "accepted" : "rejected"} successfully`
-    );
-    setApplications((prev) => prev.filter((app) => app.id !== applicationId));
-  };
 
   if (!team) {
     return <CreateTeamForm />;

@@ -132,9 +132,9 @@ export async function deleteTeam(teamId: number) {
   if (team.creator_id !== user.id) return { error: "Not authorized" };
 
   // Update registered team members has_team status
-  const registeredMembers = ((team.members || []) as TeamCreate["members"])
-    .filter((m) => m.is_registered && m.user_id)
-    .map((m) => m.user_id!);
+  const registeredMembers = (team.members ?? [] as TeamCreate["members"])
+    .filter((m: { is_registered?: boolean; user_id?: string }) => m.is_registered && m.user_id)
+    .map((m: { user_id: string }) => m.user_id);
 
   if (registeredMembers.length > 0) {
     const { error: userError } = await supabase
