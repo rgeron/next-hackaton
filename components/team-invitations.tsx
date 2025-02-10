@@ -1,18 +1,22 @@
 "use client";
 
-import { respondToInvite } from "@/app/actions/team";
+import { respondToInteraction } from "@/app/actions/interaction";
 import { Button } from "@/components/ui/button";
+import { Interaction } from "@/lib/types/database.types";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-export function TeamInvitations(props: {
-  invites: Array<{
-    team_id: number;
-    team_name: string;
-    role: string;
-    invited_at: string;
-  }>;
-}) {
+type InteractionWithDetails = Interaction & {
+  team: {
+    name: string;
+    members: Array<{ role: string }>;
+  };
+  sender: {
+    full_name: string;
+  };
+};
+
+export function TeamInvitations(props: { invites: InteractionWithDetails[] }) {
   const { invites } = props;
   const [isPending, startTransition] = useTransition();
 
@@ -20,9 +24,9 @@ export function TeamInvitations(props: {
     return null;
   }
 
-  async function handleResponse(teamId: number, accept: boolean) {
+  async function handleResponse(interactionId: number, accept: boolean) {
     startTransition(async () => {
-      const { error } = await respondToInvite(teamId, accept);
+      const { error } = await respondToInteraction(interactionId, accept);
       if (error) {
         toast.error(error);
         return;
@@ -39,30 +43,35 @@ export function TeamInvitations(props: {
       <div className="grid gap-4">
         {invites.map((invite) => (
           <div
-            key={`${invite.team_id}-${invite.invited_at}`}
+            key={invite.id}
             className="flex items-center justify-between p-4 border rounded-lg"
           >
             <div>
-              <h3 className="font-medium">{invite.team_name}</h3>
+              <h3 className="font-medium">{invite.team.name}</h3>
               <p className="text-sm text-muted-foreground">
-                Role: {invite.role}
+                From: {invite.sender.full_name}
               </p>
+              {invite.message && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Message: {invite.message}
+                </p>
+              )}
               <p className="text-sm text-muted-foreground">
-                Invited: {new Date(invite.invited_at).toLocaleDateString()}
+                Invited: {new Date(invite.created_at).toLocaleDateString()}
               </p>
             </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleResponse(invite.team_id, false)}
+                onClick={() => handleResponse(invite.id, false)}
                 disabled={isPending}
               >
                 Decline
               </Button>
               <Button
                 size="sm"
-                onClick={() => handleResponse(invite.team_id, true)}
+                onClick={() => handleResponse(invite.id, true)}
                 disabled={isPending}
               >
                 Accept

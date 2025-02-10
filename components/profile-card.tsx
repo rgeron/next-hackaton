@@ -1,11 +1,19 @@
 "use client";
 
-import { inviteToTeam } from "@/app/actions/team";
+import { inviteToTeam } from "@/app/actions/interaction";
 import { isTeamCreator } from "@/app/actions/user";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { User } from "@/lib/types/database.types";
 import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +25,8 @@ export function ProfileCard(props: { user: User }) {
   const { user } = props;
   const [isPending, startTransition] = useTransition();
   const [creatorTeamId, setCreatorTeamId] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     async function checkCreatorStatus() {
@@ -35,17 +45,24 @@ export function ProfileCard(props: { user: User }) {
   }, []);
 
   async function handleInvite() {
-    if (!creatorTeamId) {
+    if (!creatorTeamId || !message.trim()) {
       return;
     }
 
     startTransition(async () => {
-      const { error } = await inviteToTeam(user.id, creatorTeamId);
+      const { error } = await inviteToTeam({
+        team_id: creatorTeamId,
+        message,
+        receiver_id: user.id,
+      });
+
       if (error) {
         toast.error(error);
         return;
       }
       toast.success("Invitation sent successfully");
+      setIsOpen(false);
+      setMessage("");
       router.refresh();
     });
   }
@@ -61,14 +78,32 @@ export function ProfileCard(props: { user: User }) {
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
         {!user.has_team && creatorTeamId && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleInvite}
-            disabled={isPending}
-          >
-            {isPending ? "Inviting..." : "Invite to Team"}
-          </Button>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                Invite to Team
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Invite {user.full_name} to Your Team</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <Textarea
+                  placeholder="Add a message to your invitation..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                <Button
+                  className="w-full"
+                  onClick={handleInvite}
+                  disabled={!message.trim() || isPending}
+                >
+                  {isPending ? "Sending..." : "Send Invitation"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </CardHeader>
       <CardContent>

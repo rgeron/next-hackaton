@@ -1,6 +1,6 @@
 "use client";
 
-import { applyToTeam } from "@/app/actions/application";
+import { applyToTeam } from "@/app/actions/interaction";
 import { Team } from "@/lib/types/database.types";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,18 +28,11 @@ export function TeamInfoSearch({
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      console.log("Client: Starting application submission", {
-        teamId: team.id,
-        teamIdType: typeof team.id,
-        message: message,
-      });
 
-      const { error, data } = await applyToTeam({
+      const { error } = await applyToTeam({
         team_id: team.id,
         message,
       });
-
-      console.log("Client: Application response", { error, data });
 
       if (error) {
         toast.error(error);
@@ -50,7 +43,7 @@ export function TeamInfoSearch({
       setIsOpen(false);
       setMessage("");
     } catch (e) {
-      console.error("Client: Application error", e);
+      console.error("Application error:", e);
       toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
@@ -88,10 +81,12 @@ export function TeamInfoSearch({
 
         <div>
           <span className="font-medium">Team Size:</span>
-          <span className="ml-2">{team.members.length} members</span>
+          <span className="ml-2">
+            {team.members.length} / {team.max_members} members
+          </span>
         </div>
 
-        {!hasTeam && (
+        {!hasTeam && team.members.length < team.max_members && (
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button className="w-full">Ask to Join</Button>

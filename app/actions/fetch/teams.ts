@@ -15,8 +15,8 @@ type Application = {
 };
 
 export async function getTeams(filters?: {
-  project_type?: "startup" | "association" | "student_project";
-  has_space?: boolean;
+  project_type?: "physical product" | "website" | "mobile app" | "software";
+  max_members?: number;
   looking_for?: string[];
 }) {
   const supabase = await createClient();
@@ -25,10 +25,6 @@ export async function getTeams(filters?: {
 
   if (filters?.project_type) {
     query = query.eq("project_type", filters.project_type);
-  }
-
-  if (filters?.has_space) {
-    query = query.lt("members", "max_members");
   }
 
   if (filters?.looking_for?.length) {
