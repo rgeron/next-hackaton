@@ -2,18 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-type Application = {
-  id: number;
-  user_id: string;
-  message: string;
-  status: string;
-  users: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
-};
-
 export async function getTeams(filters?: {
   project_type?: "physical product" | "website" | "mobile app" | "software";
   max_members?: number;
@@ -45,8 +33,7 @@ export async function getTeam(teamId: string) {
     .select(
       `
       *,
-      members:users(id, full_name, email),
-      applications(id, user_id, message, status, users(id, full_name, email))
+      members:users(id, full_name, email)
     `
     )
     .eq("id", teamId)

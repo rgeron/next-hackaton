@@ -1,7 +1,7 @@
 "use client";
 
-import { respondToApplication } from "@/app/actions/application";
-import { getTeamApplications } from "@/app/actions/fetch/teams";
+import { fetchTeamApplications } from "@/app/actions/fetch/interactions";
+import { respondToInteraction } from "@/app/actions/interaction";
 import { Team } from "@/lib/types/database.types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -14,24 +14,26 @@ import {
   CardTitle,
 } from "./ui/card";
 
-type Application = {
+type ApplicationWithUser = {
   id: number;
-  user_id: string;
   message: string;
   status: string;
-  users: {
+  created_at: string;
+  applicant: {
     id: string;
     full_name: string;
     email: string;
+    school: string;
+    skills: string[] | null;
   };
 };
 
 export function ApplicationsToYourTeam({ team }: { team: Team }) {
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState<ApplicationWithUser[]>([]);
 
   useEffect(() => {
     if (team) {
-      getTeamApplications(team.id.toString()).then(({ data, error }) => {
+      fetchTeamApplications(team.id).then(({ data, error }) => {
         if (error) {
           toast.error(error);
           return;
@@ -47,7 +49,7 @@ export function ApplicationsToYourTeam({ team }: { team: Team }) {
     applicationId: number,
     accept: boolean
   ) => {
-    const { error } = await respondToApplication(applicationId, accept);
+    const { error } = await respondToInteraction(applicationId, accept);
     if (error) {
       toast.error(error);
       return;
@@ -77,11 +79,30 @@ export function ApplicationsToYourTeam({ team }: { team: Team }) {
               className="flex items-center justify-between p-4 rounded-lg border"
             >
               <div className="space-y-1">
-                <p className="font-medium">{application.users.full_name}</p>
+                <p className="font-medium">{application.applicant.full_name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {application.users.email}
+                  {application.applicant.email}
                 </p>
+                <p className="text-sm text-muted-foreground">
+                  School: {application.applicant.school}
+                </p>
+                {application.applicant.skills && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {application.applicant.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-2 py-0.5 bg-secondary text-xs rounded"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <p className="text-sm mt-2">{application.message}</p>
+                <p className="text-xs text-muted-foreground">
+                  Applied:{" "}
+                  {new Date(application.created_at).toLocaleDateString()}
+                </p>
               </div>
               <div className="flex gap-2">
                 <Button
