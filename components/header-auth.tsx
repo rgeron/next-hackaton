@@ -58,10 +58,10 @@ export default async function AuthButton() {
           <Link href="/protected/search-team">Search Teams</Link>
         </Button>
         <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/team">Team</Link>
+          <Link href="/protected/team">My Team</Link>
         </Button>
         <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/profile">Profile</Link>
+          <Link href="/protected/profile">My Profile</Link>
         </Button>
       </div>
       <span className="text-muted-foreground">{user.email}</span>
