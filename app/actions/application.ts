@@ -117,7 +117,7 @@ export async function respondToApplication(
   // Get all users and find the one with the matching application
   const { data: users } = await supabase
     .from("users")
-    .select("id, applications");
+    .select("id, applications, full_name");
 
   const applicantData = users?.find((user) =>
     user.applications?.some((app: UserApplication) => app.id === applicationId)
@@ -154,8 +154,10 @@ export async function respondToApplication(
           ...team.members,
           {
             user_id: applicantData.id,
+            name: applicantData.full_name || "",
             role: "Member",
             joined_at: new Date().toISOString(),
+            is_registered: true,
           },
         ],
       })
