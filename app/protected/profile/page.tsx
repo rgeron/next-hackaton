@@ -9,21 +9,27 @@ export default async function ProfilePage() {
   const { data: profile } = await getUserProfile();
 
   return (
-    <div className="container mx-auto p-4">
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="profile">My Profile</TabsTrigger>
-          <TabsTrigger value="team">My Team</TabsTrigger>
-        </TabsList>
+    <main className="min-h-screen w-full py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="profile">My Profile</TabsTrigger>
+            <TabsTrigger value="team">My Team</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="profile" className="space-y-4">
-          <ProfileForm initialData={profile} />
-        </TabsContent>
+          <TabsContent value="profile" className="w-full">
+            <div className="bg-card p-6 rounded-lg border-2">
+              <ProfileForm initialData={profile} />
+            </div>
+          </TabsContent>
 
-        <TabsContent value="team" className="space-y-4">
-          <TeamSection team={team} />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="team" className="w-full">
+            <div className="bg-card p-6 rounded-lg border-2">
+              <TeamSection team={team} />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </main>
   );
 }

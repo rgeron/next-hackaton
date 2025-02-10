@@ -104,45 +104,50 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="full_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="school"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>School</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <FormField
+            control={form.control}
+            name="full_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your school" />
-                  </SelectTrigger>
+                  <Input placeholder="John Doe" {...field} />
                 </FormControl>
-                <SelectContent>
-                  {schools.map((school) => (
-                    <SelectItem key={school} value={school}>
-                      {school}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="school"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>School</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your school" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {schools.map((school) => (
+                      <SelectItem key={school} value={school}>
+                        {school}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -153,7 +158,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
               <FormControl>
                 <Textarea
                   placeholder="Tell us about yourself"
-                  className="resize-none"
+                  className="resize-none min-h-[120px]"
                   {...field}
                 />
               </FormControl>
@@ -166,7 +171,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
           control={form.control}
           name="skills"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-full">
               <FormLabel>Skills</FormLabel>
               <SearchSkills
                 selectedSkills={field.value}
@@ -178,38 +183,42 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="links.github"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>GitHub Profile</FormLabel>
-              <FormControl>
-                <Input placeholder="https://github.com/username" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <FormField
+            control={form.control}
+            name="links.github"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>GitHub Profile</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://github.com/username" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="links.linkedin"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>LinkedIn Profile</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://linkedin.com/in/username"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="links.linkedin"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>LinkedIn Profile</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="https://linkedin.com/in/username"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <Button type="submit">Update Profile</Button>
+        <div className="flex justify-end">
+          <Button type="submit">Update Profile</Button>
+        </div>
       </form>
     </Form>
   );
