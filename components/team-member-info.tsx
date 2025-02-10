@@ -86,7 +86,7 @@ export function TeamMemberInfo({ team }: { team: Team }) {
                     <div className="mb-4">
                       <p className="text-sm font-medium mb-2">Skills</p>
                       <div className="flex flex-wrap gap-1">
-                        {userInfo.skills.map((skill) => (
+                        {userInfo.skills.map((skill: string) => (
                           <Badge key={skill} variant="outline">
                             {skill}
                           </Badge>
