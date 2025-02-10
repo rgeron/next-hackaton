@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteTeam } from "@/app/actions/team";
+import { deleteTeam, TeamCreate, updateTeam } from "@/app/actions/team";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,11 +14,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Team } from "@/lib/types/database.types";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 export function TeamInfo({ team }: { team: Team }) {
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<Partial<TeamCreate>>({
+    name: team.name || "",
+    description: team.description || "",
+    project_type: team.project_type as TeamCreate["project_type"],
+    looking_for: team.looking_for || [],
+  });
   const isTeamCreator =
     team.creator_id ===
     team.members.find((m) => m.user_id === team.creator_id)?.user_id;
@@ -44,44 +54,133 @@ export function TeamInfo({ team }: { team: Team }) {
     router.refresh();
   };
 
+  const handleUpdateTeam = async () => {
+    if (!team?.id) return;
+    const result = await updateTeam(team.id.toString(), editData);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Team updated successfully");
+    setIsEditing(false);
+    router.refresh();
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
-        <Button onClick={copyInviteLink} variant="outline" size="sm">
-          Copy Invite Link
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={copyInviteLink} variant="outline" size="sm">
+            Copy Invite Link
+          </Button>
+          {isTeamCreator && (
+            <Button
+              onClick={() => setIsEditing(!isEditing)}
+              variant="outline"
+              size="sm"
+            >
+              {isEditing ? "Cancel Edit" : "Edit Team"}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
-        <div>
-          <span className="font-medium">Name:</span>
-          <span className="ml-2">{team.name}</span>
-        </div>
+        {isEditing ? (
+          <div className="space-y-4">
+            <div>
+              <span className="font-medium">Name:</span>
+              <Input
+                value={editData.name}
+                onChange={(e) =>
+                  setEditData({ ...editData, name: e.target.value })
+                }
+                className="mt-1"
+              />
+            </div>
 
-        <div>
-          <span className="font-medium">Description:</span>
-          <p className="mt-1 text-muted-foreground">{team.description}</p>
-        </div>
+            <div>
+              <span className="font-medium">Description:</span>
+              <Textarea
+                value={editData.description}
+                onChange={(e) =>
+                  setEditData({ ...editData, description: e.target.value })
+                }
+                className="mt-1"
+              />
+            </div>
 
-        <div>
-          <span className="font-medium">Project Type:</span>
-          <span className="ml-2">{team.project_type}</span>
-        </div>
-
-        <div>
-          <span className="font-medium">Looking for:</span>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {team.looking_for.map((role) => (
-              <span
-                key={role}
-                className="px-2 py-1 bg-secondary rounded-md text-sm"
+            <div>
+              <span className="font-medium">Project Type:</span>
+              <select
+                value={editData.project_type}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    project_type: e.target.value as TeamCreate["project_type"],
+                  })
+                }
+                className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2"
               >
-                {role}
-              </span>
-            ))}
+                <option value="physical product">Physical Product</option>
+                <option value="website">Website</option>
+                <option value="mobile app">Mobile App</option>
+                <option value="software">Software</option>
+              </select>
+            </div>
+
+            <div>
+              <span className="font-medium">Looking for:</span>
+              <Input
+                value={editData.looking_for?.join(", ")}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    looking_for: e.target.value.split(",").map((s) => s.trim()),
+                  })
+                }
+                placeholder="Separate roles with commas"
+                className="mt-1"
+              />
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <Button onClick={handleUpdateTeam}>Save Changes</Button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <div>
+              <span className="font-medium">Name:</span>
+              <span className="ml-2">{team.name}</span>
+            </div>
+
+            <div>
+              <span className="font-medium">Description:</span>
+              <p className="mt-1 text-muted-foreground">{team.description}</p>
+            </div>
+
+            <div>
+              <span className="font-medium">Project Type:</span>
+              <span className="ml-2">{team.project_type}</span>
+            </div>
+
+            <div>
+              <span className="font-medium">Looking for:</span>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {team.looking_for.map((role) => (
+                  <span
+                    key={role}
+                    className="px-2 py-1 bg-secondary rounded-md text-sm"
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         <div>
           <span className="font-medium">Team Members:</span>
