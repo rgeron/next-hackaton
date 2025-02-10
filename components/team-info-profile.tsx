@@ -99,7 +99,7 @@ export function TeamInfo({ team }: { team: Team }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 border-2 rounded-lg p-4">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
         {isTeamCreator && (
@@ -240,38 +240,6 @@ export function TeamInfo({ team }: { team: Team }) {
             </div>
           </>
         )}
-
-        <div>
-          <span className="font-medium">Team Members:</span>
-          <div className="mt-2 space-y-2">
-            {team.members.map((member) => (
-              <div
-                key={member.user_id || member.name}
-                className="flex items-center justify-between p-2 rounded-md bg-secondary/50"
-              >
-                <div className="flex items-center gap-2">
-                  <span>
-                    {member.is_registered ? member.user_id : member.name}
-                  </span>
-                  <span>{member.role}</span>
-                  {team.creator_id === member.user_id && (
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      Creator
-                    </span>
-                  )}
-                  {!member.is_registered && (
-                    <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                      Not Registered
-                    </span>
-                  )}
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  Joined {new Date(member.joined_at).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {isTeamCreator && (
