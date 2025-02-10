@@ -24,7 +24,7 @@ export default async function ProfilePage() {
           </TabsContent>
 
           <TabsContent value="team" className="w-full">
-            <div className="bg-card p-6 rounded-lg border-2">
+            <div className="bg-card p-6 rounded-lg">
               <TeamSection team={team} />
             </div>
           </TabsContent>

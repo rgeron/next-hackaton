@@ -6,6 +6,7 @@ export type UserProfile = {
   full_name: string;
   school: "X" | "HEC" | "ENSAE" | "Centrale" | "ENSTA";
   bio?: string;
+  phone_number?: string;
   skills?: string[];
   links: {
     github?: string;
@@ -43,6 +44,7 @@ export async function createUserProfile(email: string) {
           full_name: "",
           school: "X",
           has_team: false,
+          phone_number: null,
           links: { github: null, linkedin: null },
           applications: [],
           skills: [],

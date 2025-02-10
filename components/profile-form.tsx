@@ -59,6 +59,7 @@ const profileSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
   school: z.enum(schools),
   bio: z.string().optional(),
+  phone_number: z.string().optional().or(z.literal("")),
   skills: z.array(z.string()).default([]),
   links: z.object({
     github: z.string().url().optional().or(z.literal("")),
@@ -75,6 +76,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
       full_name: props.initialData?.full_name || "",
       school: props.initialData?.school || "X",
       bio: props.initialData?.bio || "",
+      phone_number: props.initialData?.phone_number ?? "",
       skills: props.initialData?.skills || [],
       links: {
         github: props.initialData?.links?.github || "",
@@ -105,7 +107,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <FormField
             control={form.control}
             name="full_name"
@@ -143,6 +145,24 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
                     ))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="+33 6 12 34 56 78"
+                    type="tel"
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

@@ -6,6 +6,7 @@ export type User = {
   school: "X" | "HEC" | "ENSAE" | "Centrale" | "ENSTA"; // ENUM, NOT NULL
   bio: string | null; // TEXT
   created_at: Date; // TIMESTAMPTZ, DEFAULT NOW()
+  phone_number: string | null; // TEXT
   skills: string[] | null; // TEXT[]
   has_team: boolean; // BOOLEAN, DEFAULT false
   links: {
