@@ -68,8 +68,8 @@ export function TeamSection({ team }: { team: Team | null }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="lg:sticky lg:top-8">
+    <div className="border-2 p-4 rounded-lg">
+      <div>
         <TeamInfo team={team} />
       </div>
 

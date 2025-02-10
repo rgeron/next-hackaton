@@ -46,8 +46,8 @@ export function TeamInfo({ team }: { team: Team }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Your Team</h2>
+      <div className="flex flex-col items-center justify-center p-4">
+        <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
         <div className="flex gap-2">
           <Button onClick={copyInviteLink} variant="outline" size="sm">
             Copy Invite Link
