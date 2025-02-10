@@ -12,6 +12,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Team } from "@/lib/types/database.types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,6 +31,8 @@ import { Textarea } from "./ui/textarea";
 export function TeamInfo({ team }: { team: Team }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [newMember, setNewMember] = useState({ name: "", role: "" });
   const [editData, setEditData] = useState<Partial<TeamCreate>>({
     name: team.name || "",
     description: team.description || "",
@@ -32,12 +42,6 @@ export function TeamInfo({ team }: { team: Team }) {
   const isTeamCreator =
     team.creator_id ===
     team.members.find((m) => m.user_id === team.creator_id)?.user_id;
-
-  const copyInviteLink = () => {
-    const inviteLink = `${window.location.origin}/invite/${team.id}`;
-    navigator.clipboard.writeText(inviteLink);
-    toast.success("Invite link copied to clipboard!");
-  };
 
   const handleDeleteTeam = async () => {
     if (!team?.id) {
@@ -66,15 +70,83 @@ export function TeamInfo({ team }: { team: Team }) {
     router.refresh();
   };
 
+  const handleAddMember = async () => {
+    if (!newMember.name || !newMember.role) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    const memberData = {
+      role: newMember.role,
+      name: newMember.name,
+      joined_at: new Date().toISOString(),
+      is_registered: false,
+    };
+
+    const result = await updateTeam(team.id.toString(), {
+      members: [...team.members, memberData],
+    });
+
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+
+    toast.success("Member added successfully");
+    setIsAddingMember(false);
+    setNewMember({ name: "", role: "" });
+    router.refresh();
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
-        <div className="flex gap-2">
-          <Button onClick={copyInviteLink} variant="outline" size="sm">
-            Copy Invite Link
-          </Button>
-        </div>
+        {isTeamCreator && (
+          <Dialog open={isAddingMember} onOpenChange={setIsAddingMember}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                Add Team Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Team Member</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Name</Label>
+                  <Input
+                    value={newMember.name}
+                    onChange={(e) =>
+                      setNewMember((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Member's name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Input
+                    value={newMember.role}
+                    onChange={(e) =>
+                      setNewMember((prev) => ({
+                        ...prev,
+                        role: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g. Frontend Developer"
+                  />
+                </div>
+                <Button onClick={handleAddMember} className="w-full">
+                  Add Member
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
@@ -174,14 +246,22 @@ export function TeamInfo({ team }: { team: Team }) {
           <div className="mt-2 space-y-2">
             {team.members.map((member) => (
               <div
-                key={member.user_id}
+                key={member.user_id || member.name}
                 className="flex items-center justify-between p-2 rounded-md bg-secondary/50"
               >
                 <div className="flex items-center gap-2">
+                  <span>
+                    {member.is_registered ? member.user_id : member.name}
+                  </span>
                   <span>{member.role}</span>
                   {team.creator_id === member.user_id && (
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                       Creator
+                    </span>
+                  )}
+                  {!member.is_registered && (
+                    <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                      Not Registered
                     </span>
                   )}
                 </div>
@@ -192,28 +272,6 @@ export function TeamInfo({ team }: { team: Team }) {
             ))}
           </div>
         </div>
-
-        {team.pending_invites.length > 0 && (
-          <div>
-            <span className="font-medium">Pending Invites:</span>
-            <div className="mt-2 space-y-2">
-              {team.pending_invites.map((invite) => (
-                <div
-                  key={invite.email}
-                  className="flex items-center justify-between p-2 rounded-md bg-secondary/50"
-                >
-                  <span>{invite.email}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">{invite.role}</span>
-                    <span className="text-xs bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded-full">
-                      Pending
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {isTeamCreator && (

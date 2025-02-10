@@ -7,9 +7,12 @@ export type TeamCreate = {
   description: string;
   looking_for?: string[];
   project_type: "physical product" | "website" | "mobile app" | "software";
-  pending_invites?: {
-    email: string;
+  members?: {
     role: string;
+    user_id?: string;
+    name: string;
+    joined_at: string;
+    is_registered: boolean;
   }[];
 };
 
@@ -47,14 +50,13 @@ export async function createTeam(teamData: TeamCreate) {
         members: [
           {
             user_id: user.id,
+            name: "", // Will be populated from user profile
             role: "Project Lead",
-            joined_at: new Date(),
+            joined_at: new Date().toISOString(),
+            is_registered: true,
           },
+          ...(teamData.members || []),
         ],
-        pending_invites: (teamData.pending_invites || []).map((invite) => ({
-          ...invite,
-          invited_at: new Date(),
-        })),
       },
     ])
     .select()
@@ -129,18 +131,19 @@ export async function deleteTeam(teamId: number) {
   if (!team) return { error: "Team not found" };
   if (team.creator_id !== user.id) return { error: "Not authorized" };
 
-  type TeamMember = { user_id: string; role: string; joined_at: Date };
+  // Update registered team members has_team status
+  const registeredMembers = ((team.members || []) as TeamCreate["members"])
+    .filter((m) => m.is_registered && m.user_id)
+    .map((m) => m.user_id!);
 
-  // Update all team members has_team status
-  const { error: userError } = await supabase
-    .from("users")
-    .update({ has_team: false })
-    .in(
-      "id",
-      (team.members as TeamMember[]).map((m) => m.user_id)
-    );
+  if (registeredMembers.length > 0) {
+    const { error: userError } = await supabase
+      .from("users")
+      .update({ has_team: false })
+      .in("id", registeredMembers);
 
-  if (userError) return { error: userError.message };
+    if (userError) return { error: userError.message };
+  }
 
   // Delete team
   const { error } = await supabase.from("teams").delete().eq("id", teamId);

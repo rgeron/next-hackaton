@@ -34,9 +34,11 @@ export type Team = {
   project_type: "physical product" | "website" | "mobile app" | "software"; // ENUM, NOT NULL
   looking_for: string[]; // TEXT[], NOT NULL
   members: {
-    user_id: string; // UUID, REFERENCES users(id)
-    role: string; // One of JOB_OPTIONS
-    joined_at: Date;
+    role: string;
+    user_id?: string; // Optional for manually added members
+    name: string; // Required for manually added members
+    joined_at: string;
+    is_registered: boolean; // To distinguish between registered/manual members
   }[]; // JSONB, NOT NULL
   pending_invites: {
     email: string;
