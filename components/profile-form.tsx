@@ -1,7 +1,7 @@
 "use client";
 
 import { updateUserProfile } from "@/app/actions/profile";
-import { Badge } from "@/components/ui/badge";
+import { SearchSkills } from "@/components/search-skills";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,9 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -61,7 +59,7 @@ const profileSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
   school: z.enum(schools),
   bio: z.string().optional(),
-  skills: z.array(z.enum(allSkills)).default([]),
+  skills: z.array(z.string()).default([]),
   links: z.object({
     github: z.string().url().optional().or(z.literal("")),
     linkedin: z.string().url().optional().or(z.literal("")),
@@ -167,66 +165,14 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
         <FormField
           control={form.control}
           name="skills"
-          render={() => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Skills</FormLabel>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium mb-2">Technical Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {technicalSkills.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant={
-                          selectedSkills.includes(skill)
-                            ? "default"
-                            : "secondary"
-                        }
-                        className={cn(
-                          "cursor-pointer select-none",
-                          selectedSkills.includes(skill) &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                        onClick={() => toggleSkill(skill)}
-                      >
-                        {skill}
-                        {selectedSkills.includes(skill) && (
-                          <X className="ml-1 h-3 w-3" />
-                        )}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium mb-2">Business Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {businessSkills.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant={
-                          selectedSkills.includes(skill)
-                            ? "default"
-                            : "secondary"
-                        }
-                        className={cn(
-                          "cursor-pointer select-none",
-                          selectedSkills.includes(skill) &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                        onClick={() => toggleSkill(skill)}
-                      >
-                        {skill}
-                        {selectedSkills.includes(skill) && (
-                          <X className="ml-1 h-3 w-3" />
-                        )}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <FormDescription>
-                Click on skills to add/remove them from your profile
-              </FormDescription>
+              <SearchSkills
+                selectedSkills={field.value}
+                onSkillsChange={field.onChange}
+              />
+              <FormDescription>Search and select your skills</FormDescription>
               <FormMessage />
             </FormItem>
           )}
