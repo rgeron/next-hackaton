@@ -30,11 +30,13 @@ export async function getUserTeam() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Get user's team - check creator_id first
+  // Get user's team - check both creator_id and membership
   const { data: teams, error } = await supabase
     .from("teams")
     .select("*")
-    .eq("creator_id", user.id);
+    .or(`creator_id.eq.${user.id},members.cs.{"user_id":"${user.id}"}`);
+
+  if (error) throw new Error(error.message);
   return teams?.[0] || null;
 }
 
@@ -172,37 +174,47 @@ export async function inviteToTeam(userId: string, teamId: number) {
   // Verify user is team creator
   const { data: team } = await supabase
     .from("teams")
-    .select()
+    .select("name")
     .eq("id", teamId)
     .single();
 
   if (!team) return { error: "Team not found" };
-  if (team.creator_id !== user.id) return { error: "Not authorized" };
 
-  // Check if user is already invited
-  const pendingInvites = team.pending_invites || [];
-  if (pendingInvites.some((invite: TeamInvite) => invite.user_id === userId)) {
+  // Get current invites
+  const { data: userData } = await supabase
+    .from("users")
+    .select("pending_team_invites")
+    .eq("id", userId)
+    .single();
+
+  const currentInvites = userData?.pending_team_invites || [];
+
+  // Check if already invited
+  if (
+    currentInvites.some(
+      (invite: any) => invite.team_id === teamId && invite.status === "pending"
+    )
+  ) {
     return { error: "User already invited" };
   }
 
-  // Add invitation
-  const newInvite: TeamInvite = {
-    user_id: userId,
-    role: "Member",
-    invited_at: new Date().toISOString(),
-  };
-
-  const { data, error } = await supabase
-    .from("teams")
+  // Add new invitation
+  const { error: userError } = await supabase
+    .from("users")
     .update({
-      pending_invites: [...pendingInvites, newInvite],
+      pending_team_invites: [
+        ...currentInvites,
+        {
+          team_id: teamId,
+          invited_at: new Date().toISOString(),
+          status: "pending",
+        },
+      ],
     })
-    .eq("id", teamId)
-    .select()
-    .single();
+    .eq("id", userId);
 
-  if (error) return { error: error.message };
-  return { data };
+  if (userError) return { error: userError.message };
+  return { data: team };
 }
 
 export async function respondToInvite(teamId: number, accept: boolean) {
@@ -213,59 +225,74 @@ export async function respondToInvite(teamId: number, accept: boolean) {
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Get team details
-  const { data: team } = await supabase
-    .from("teams")
-    .select()
-    .eq("id", teamId)
+  // Get user's current invites
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("pending_team_invites")
+    .eq("id", user.id)
     .single();
 
-  if (!team) return { error: "Team not found" };
+  if (userError) return { error: userError.message };
 
-  // Find and remove the invitation
-  const pendingInvites = team.pending_invites || [];
+  // Find and update the invitation
+  const pendingInvites = userData.pending_team_invites || [];
   const inviteIndex = pendingInvites.findIndex(
-    (invite: TeamInvite) => invite.user_id === user.id
+    (invite: any) => invite.team_id === teamId && invite.status === "pending"
   );
 
   if (inviteIndex === -1) return { error: "Invitation not found" };
-  const invite = pendingInvites[inviteIndex];
-  pendingInvites.splice(inviteIndex, 1);
+
+  // Update invitation status
+  pendingInvites[inviteIndex].status = accept ? "accepted" : "rejected";
 
   if (accept) {
+    // Get team details
+    const { data: team } = await supabase
+      .from("teams")
+      .select("members")
+      .eq("id", teamId)
+      .single();
+
+    if (!team) return { error: "Team not found" };
+
     // Check if team still has space
-    if (team.members.length >= (team.max_members || 5)) {
+    if (team.members.length >= 5) {
       return { error: "Team is already full" };
     }
 
     // Add user to team members
-    team.members.push({
-      user_id: user.id,
-      role: invite.role,
-      joined_at: new Date().toISOString(),
-      is_registered: true,
-    });
+    const { error: teamError } = await supabase
+      .from("teams")
+      .update({
+        members: [
+          ...team.members,
+          {
+            user_id: user.id,
+            role: "Member",
+            joined_at: new Date().toISOString(),
+            is_registered: true,
+          },
+        ],
+      })
+      .eq("id", teamId);
+
+    if (teamError) return { error: teamError.message };
 
     // Update user's has_team status
-    const { error: userError } = await supabase
+    const { error: hasTeamError } = await supabase
       .from("users")
       .update({ has_team: true })
       .eq("id", user.id);
 
-    if (userError) return { error: userError.message };
+    if (hasTeamError) return { error: hasTeamError.message };
   }
 
-  // Update team
-  const { data, error } = await supabase
-    .from("teams")
-    .update({
-      members: team.members,
-      pending_invites: pendingInvites,
-    })
-    .eq("id", teamId)
-    .select()
-    .single();
+  // Update user's pending invites
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ pending_team_invites: pendingInvites })
+    .eq("id", user.id);
 
-  if (error) return { error: error.message };
-  return { data };
+  if (updateError) return { error: updateError.message };
+  return { success: true };
 }

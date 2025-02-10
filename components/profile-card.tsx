@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserTeam, inviteToTeam } from "@/app/actions/team";
+import { inviteToTeam } from "@/app/actions/team";
 import { isTeamCreator } from "@/app/actions/user";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -8,45 +8,45 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/lib/types/database.types";
 import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function ProfileCard(props: { user: User }) {
+  const router = useRouter();
   const { user } = props;
   const [isPending, startTransition] = useTransition();
-  const [isCreator, setIsCreator] = useState(false);
+  const [creatorTeamId, setCreatorTeamId] = useState<number | null>(null);
 
   useEffect(() => {
     async function checkCreatorStatus() {
-      const { data, error } = await isTeamCreator();
-      if (error) {
-        toast.error(error);
-        return;
+      try {
+        const teamId = await isTeamCreator();
+        setCreatorTeamId(teamId);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to check team creator status"
+        );
       }
-      setIsCreator(data ?? false);
     }
     checkCreatorStatus();
   }, []);
 
   async function handleInvite() {
-    if (!isCreator) {
-      return;
-    }
-
-    // Get the team data for the invitation
-    const { data: team } = await getUserTeam();
-    if (!team) {
-      toast.error("Could not find your team");
+    if (!creatorTeamId) {
       return;
     }
 
     startTransition(async () => {
-      const { error } = await inviteToTeam(user.id, team.id);
+      const { error } = await inviteToTeam(user.id, creatorTeamId);
       if (error) {
         toast.error(error);
         return;
       }
       toast.success("Invitation sent successfully");
+      router.refresh();
     });
   }
 
@@ -60,7 +60,7 @@ export function ProfileCard(props: { user: User }) {
           <CardTitle>{user.full_name}</CardTitle>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-        {!user.has_team && isCreator && (
+        {!user.has_team && creatorTeamId && (
           <Button
             variant="outline"
             size="sm"

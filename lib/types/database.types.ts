@@ -22,6 +22,11 @@ export type User = {
     status: "pending" | "accepted" | "rejected";
     created_at: Date;
   }[];
+  pending_team_invites: {
+    team_id: number;
+    invited_at: Date;
+    status: "pending" | "accepted" | "rejected";
+  }[];
 };
 
 // Team table type

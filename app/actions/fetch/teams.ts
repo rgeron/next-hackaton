@@ -125,24 +125,26 @@ export async function getTeamInvitations() {
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  // Get user's pending invites directly from their record
   const { data, error } = await supabase
-    .from("teams")
-    .select("id, name, pending_invites")
-    .contains("pending_invites", [{ user_id: user.id }]);
+    .from("users")
+    .select("pending_team_invites, teams!inner(id, name)")
+    .eq("id", user.id)
+    .eq("pending_team_invites[].status", "pending")
+    .single();
 
   if (error) return { error: error.message };
+  if (!data?.pending_team_invites) return { data: [] };
 
-  // Transform the data to a more usable format
-  const invites = data?.flatMap((team) =>
-    team.pending_invites
-      .filter((invite: any) => invite.user_id === user.id)
-      .map((invite: any) => ({
-        team_id: team.id,
-        team_name: team.name,
-        role: invite.role,
-        invited_at: invite.invited_at,
-      }))
-  );
+  // Transform the data to match the expected format
+  const invites = data.pending_team_invites.map((invite: any) => ({
+    team_id: invite.team_id,
+    team_name:
+      data.teams.find((t: any) => t.id === invite.team_id)?.name ||
+      "Unknown Team",
+    role: "Member",
+    invited_at: invite.invited_at,
+  }));
 
-  return { data: invites || [] };
+  return { data: invites };
 }
