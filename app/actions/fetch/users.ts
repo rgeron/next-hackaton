@@ -80,3 +80,15 @@ export async function getUserApplications() {
   if (error) return { error: error.message };
   return { data };
 }
+
+export async function getUsersByIds(userIds: string[]) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .in("id", userIds);
+
+  if (error) return { error: error.message };
+  return { data };
+}

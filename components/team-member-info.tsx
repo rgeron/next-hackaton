@@ -1,6 +1,6 @@
 "use client";
 
-import { getUser } from "@/app/actions/fetch/users";
+import { getUsersByIds } from "@/app/actions/fetch/users";
 import { Team } from "@/lib/types/database.types";
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
@@ -13,26 +13,20 @@ import {
 } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 
-type UserInfo = Awaited<ReturnType<typeof getUser>>["data"];
+type UserInfo = NonNullable<
+  Awaited<ReturnType<typeof getUsersByIds>>["data"]
+>[number];
 
 export function TeamMemberInfo({ team }: { team: Team }) {
-  const [membersInfo, setMembersInfo] = useState<Record<string, UserInfo>>({});
+  const [membersInfo, setMembersInfo] = useState<UserInfo[]>([]);
 
   useEffect(() => {
     const fetchMembersInfo = async () => {
-      const memberInfoPromises = team.members.map(async (member) => {
-        const result = await getUser(member.user_id);
-        if (result.data) {
-          return [member.user_id, result.data] as const;
-        }
-        return null;
-      });
-
-      const results = await Promise.all(memberInfoPromises);
-      const memberInfoMap = Object.fromEntries(
-        results.filter((r): r is [string, UserInfo] => r !== null)
-      );
-      setMembersInfo(memberInfoMap);
+      const userIds = team.members.map((member) => member.user_id);
+      const result = await getUsersByIds(userIds);
+      if (result.data) {
+        setMembersInfo(result.data);
+      }
     };
 
     fetchMembersInfo();
@@ -48,7 +42,7 @@ export function TeamMemberInfo({ team }: { team: Team }) {
         <ScrollArea className="h-[600px] pr-4">
           <div className="space-y-6">
             {team.members.map((member) => {
-              const userInfo = membersInfo[member.user_id];
+              const userInfo = membersInfo.find((u) => u.id === member.user_id);
               if (!userInfo) return null;
 
               return (
