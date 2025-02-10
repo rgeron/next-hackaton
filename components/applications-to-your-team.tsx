@@ -88,9 +88,9 @@ export function ApplicationsToYourTeam({ team }: { team: Team }) {
                 </p>
                 {application.applicant.skills && (
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {application.applicant.skills.map((skill) => (
+                    {application.applicant.skills.map((skill, index) => (
                       <span
-                        key={skill}
+                        key={`${skill}-${index}`}
                         className="px-2 py-0.5 bg-secondary text-xs rounded"
                       >
                         {skill}

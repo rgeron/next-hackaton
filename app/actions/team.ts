@@ -7,6 +7,7 @@ export type TeamCreate = {
   description: string;
   looking_for?: string[];
   project_type: "physical product" | "website" | "mobile app" | "software";
+  max_members: number;
   members?: {
     role: string;
     user_id?: string;

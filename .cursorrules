@@ -44,6 +44,7 @@ You are an AI embed in a project that use :
 
 <database-querying-and-data-model-creation>
 - Use Supabase for the database.
+- I do not use the CLI to create tables, I use the SQL editor.
 </database-querying-and-data-model-creation>
 
 <key-conventions>

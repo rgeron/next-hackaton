@@ -50,6 +50,7 @@ const formSchema = z.object({
     "software",
   ]),
   looking_for: z.array(z.enum([...JOB_OPTIONS])).min(1),
+  max_members: z.number().min(2).max(5),
 });
 
 export function CreateTeamForm() {
@@ -62,6 +63,7 @@ export function CreateTeamForm() {
       description: "",
       project_type: "website",
       looking_for: [],
+      max_members: 5,
     },
   });
 
@@ -171,6 +173,34 @@ export function CreateTeamForm() {
                     <SelectItem value="website">Website</SelectItem>
                     <SelectItem value="mobile app">Mobile App</SelectItem>
                     <SelectItem value="software">Software</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="max_members"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maximum Team Size</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(parseInt(value))}
+                  defaultValue={field.value.toString()}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select max team size" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {[2, 3, 4, 5].map((size) => (
+                      <SelectItem key={size} value={size.toString()}>
+                        {size} members
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

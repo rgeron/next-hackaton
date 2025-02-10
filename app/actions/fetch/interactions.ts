@@ -39,6 +39,7 @@ export async function fetchTeamApplications(teamId: number) {
     )
     .eq("team_involved_id", teamId)
     .eq("type", "team_application")
+    .eq("status", "pending")
     .order("created_at", { ascending: false });
 
   if (error) return { error: error.message };
@@ -77,6 +78,7 @@ export async function fetchUserInvites() {
     )
     .eq("receiver_id", user.id)
     .eq("type", "team_invite")
+    .eq("status", "pending")
     .order("created_at", { ascending: false });
 
   if (error) return { error: error.message };
