@@ -68,8 +68,10 @@ export function TeamSection({ team }: { team: Team | null }) {
   }
 
   return (
-    <div className="space-y-6">
-      <TeamInfo team={team} />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="lg:sticky lg:top-8">
+        <TeamInfo team={team} />
+      </div>
 
       {applications.length > 0 && (
         <Card>

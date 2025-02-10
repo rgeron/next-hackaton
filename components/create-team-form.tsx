@@ -133,122 +133,129 @@ export function CreateTeamForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Team Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter team name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Describe your team and project"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="project_type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Team Name</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select project type" />
-                  </SelectTrigger>
+                  <Input placeholder="Enter team name" {...field} />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="physical product">
-                    Physical Product
-                  </SelectItem>
-                  <SelectItem value="website">Website</SelectItem>
-                  <SelectItem value="mobile app">Mobile App</SelectItem>
-                  <SelectItem value="software">Software</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="looking_for"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Looking For (select multiple)</FormLabel>
-              <FormControl>
+          <FormField
+            control={form.control}
+            name="project_type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Project Type</FormLabel>
                 <Select
-                  onValueChange={(value) => {
-                    const currentValues = Array.isArray(field.value)
-                      ? field.value
-                      : [];
-                    if (!currentValues.includes(value as any)) {
-                      field.onChange([...currentValues, value]);
-                    }
-                  }}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Add team roles" />
+                      <SelectValue placeholder="Select project type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {JOB_OPTIONS.map((job) => (
-                      <SelectItem key={job} value={job}>
-                        {job}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="physical product">
+                      Physical Product
+                    </SelectItem>
+                    <SelectItem value="website">Website</SelectItem>
+                    <SelectItem value="mobile app">Mobile App</SelectItem>
+                    <SelectItem value="software">Software</SelectItem>
                   </SelectContent>
                 </Select>
-              </FormControl>
-              {field.value && field.value.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {field.value.map((value) => (
-                    <div
-                      key={value}
-                      className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-md"
-                    >
-                      <span>{value}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          field.onChange(
-                            field.value.filter((v) => v !== value)
-                          );
-                        }}
-                        className="text-muted-foreground hover:text-foreground"
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Describe your team and project"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="looking_for"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Looking For (select multiple)</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => {
+                      const currentValues = Array.isArray(field.value)
+                        ? field.value
+                        : [];
+                      if (!currentValues.includes(value as any)) {
+                        field.onChange([...currentValues, value]);
+                      }
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Add team roles" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {JOB_OPTIONS.map((job) => (
+                        <SelectItem key={job} value={job}>
+                          {job}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                {field.value && field.value.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {field.value.map((value) => (
+                      <div
+                        key={value}
+                        className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-md"
                       >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                        <span>{value}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            field.onChange(
+                              field.value.filter((v) => v !== value)
+                            );
+                          }}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit" className="w-full">
           Create Team
