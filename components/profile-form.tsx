@@ -3,7 +3,6 @@
 import { updateUserProfile } from "@/app/actions/profile";
 import { SearchSkills } from "@/components/search-skills";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -62,7 +61,6 @@ const profileSchema = z.object({
   bio: z.string().optional(),
   phone_number: z.string().optional().or(z.literal("")),
   skills: z.array(z.string()).default([]),
-  looking_for_a_team: z.boolean().default(false),
   links: z.object({
     github: z.string().url().optional().or(z.literal("")),
     linkedin: z.string().url().optional().or(z.literal("")),
@@ -80,7 +78,6 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
       bio: props.initialData?.bio || "",
       phone_number: props.initialData?.phone_number ?? "",
       skills: props.initialData?.skills || [],
-      looking_for_a_team: props.initialData?.looking_for_a_team ?? false,
       links: {
         github: props.initialData?.links?.github || "",
         linkedin: props.initialData?.links?.linkedin || "",
@@ -239,26 +236,8 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="looking_for_a_team"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={!field.value}
-                  onCheckedChange={(checked) => field.onChange(!checked)}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>I want to create my own team</FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-
         <div className="flex justify-end">
-          <Button type="submit">Update Profile</Button>
+          <Button type="submit">Save Changes</Button>
         </div>
       </form>
     </Form>

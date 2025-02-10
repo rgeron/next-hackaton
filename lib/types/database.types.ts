@@ -9,7 +9,6 @@ export type User = {
   phone_number: string | null; // TEXT
   skills: string[] | null; // TEXT[]
   has_team: boolean; // BOOLEAN, DEFAULT false
-  looking_for_a_team: boolean; // BOOLEAN, DEFAULT true
   links: {
     // JSONB
     github: string | null;
