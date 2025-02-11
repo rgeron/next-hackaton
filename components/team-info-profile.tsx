@@ -203,114 +203,114 @@ export function TeamInfo({ team }: { team: Team }) {
   return (
     <div className="space-y-4">
       <div className="border-2 rounded-lg p-4">
-        <h2 className="text-xl font-bold text-center mb-4">Team Information</h2>
-        <div className="rounded-lg border p-4 space-y-4">
+        <h2 className="text-xl font-bold text-center mb-4">{team.name}</h2>
+        <div className="rounded-lg border p-4">
           {isEditing ? (
-            <div className="space-y-4">
-              <div>
-                <span className="font-medium">Name:</span>
-                <Input
-                  value={editData.name}
-                  onChange={(e) =>
-                    setEditData({ ...editData, name: e.target.value })
-                  }
-                  className="mt-1"
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <div className="space-y-2">
+                  <span className="font-medium block">Description</span>
+                  <Textarea
+                    value={editData.description}
+                    onChange={(e) =>
+                      setEditData({ ...editData, description: e.target.value })
+                    }
+                    className="h-full min-h-[120px]"
+                  />
+                </div>
               </div>
 
-              <div>
-                <span className="font-medium">Description:</span>
-                <Textarea
-                  value={editData.description}
-                  onChange={(e) =>
-                    setEditData({ ...editData, description: e.target.value })
-                  }
-                  className="mt-1"
-                />
-              </div>
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span className="font-medium block">Name</span>
+                  <Input
+                    value={editData.name}
+                    onChange={(e) =>
+                      setEditData({ ...editData, name: e.target.value })
+                    }
+                    className="mt-1"
+                  />
+                </div>
 
-              <div>
-                <span className="font-medium">Project Type:</span>
-                <select
-                  value={editData.project_type}
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      project_type: e.target
-                        .value as TeamCreate["project_type"],
-                    })
-                  }
-                  className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2"
-                >
-                  <option value="physical product">Physical Product</option>
-                  <option value="website">Website</option>
-                  <option value="mobile app">Mobile App</option>
-                  <option value="software">Software</option>
-                </select>
-              </div>
+                <div>
+                  <span className="font-medium block">Project Type</span>
+                  <select
+                    value={editData.project_type}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        project_type: e.target
+                          .value as TeamCreate["project_type"],
+                      })
+                    }
+                    className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2"
+                  >
+                    <option value="physical product">Physical Product</option>
+                    <option value="website">Website</option>
+                    <option value="mobile app">Mobile App</option>
+                    <option value="software">Software</option>
+                  </select>
+                </div>
 
-              <div>
-                <span className="font-medium">Looking for:</span>
-                <Input
-                  value={editData.looking_for?.join(", ")}
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      looking_for: e.target.value
-                        .split(",")
-                        .map((s) => s.trim()),
-                    })
-                  }
-                  placeholder="Separate roles with commas"
-                  className="mt-1"
-                />
+                <div className="sm:col-span-2">
+                  <span className="font-medium block">Looking for</span>
+                  <Input
+                    value={editData.looking_for?.join(", ")}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        looking_for: e.target.value
+                          .split(",")
+                          .map((s) => s.trim()),
+                      })
+                    }
+                    placeholder="Separate roles with commas"
+                    className="mt-1"
+                  />
+                </div>
               </div>
             </div>
           ) : (
-            <>
-              <div>
-                <span className="font-medium">Name:</span>
-                <span className="ml-2">{team.name}</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <span className="font-medium block">Description</span>
+                <p className="text-muted-foreground mt-2">{team.description}</p>
               </div>
 
-              <div>
-                <span className="font-medium">Description:</span>
-                <p className="mt-1 text-muted-foreground">{team.description}</p>
-              </div>
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span className="font-medium block">Project Type</span>
+                  <span className="text-muted-foreground block mt-2">
+                    {team.project_type}
+                  </span>
+                </div>
 
-              <div>
-                <span className="font-medium">Project Type:</span>
-                <span className="ml-2">{team.project_type}</span>
-              </div>
-
-              <div>
-                <span className="font-medium">Looking for:</span>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {team.looking_for.map((role) => (
-                    <span
-                      key={role}
-                      className="px-2 py-1 bg-secondary rounded-md text-sm"
-                    >
-                      {role}
-                    </span>
-                  ))}
+                <div className="sm:col-span-2">
+                  <span className="font-medium block">Looking for</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {team.looking_for.map((role) => (
+                      <span
+                        key={role}
+                        className="px-2 py-0.5 bg-secondary rounded-md text-xs"
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
         {isTeamCreator && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center pt-4">
+          <div className="flex justify-between items-center gap-4 pt-4">
+            <div className="flex gap-2">
               <EditTeamButton
                 isEditing={isEditing}
                 onEdit={() => setIsEditing(true)}
                 onSave={handleUpdateTeam}
               />
-              <DeleteTeamButton onDelete={handleDeleteTeam} />
-            </div>
-            <div className="flex flex-col items-center justify-center p-4">
               <AddTeamMemberButton
                 isAddingMember={isAddingMember}
                 setIsAddingMember={setIsAddingMember}
@@ -319,6 +319,7 @@ export function TeamInfo({ team }: { team: Team }) {
                 onAddMember={handleAddMember}
               />
             </div>
+            <DeleteTeamButton onDelete={handleDeleteTeam} />
           </div>
         )}
       </div>
