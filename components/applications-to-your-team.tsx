@@ -68,8 +68,7 @@ export function ApplicationsToYourTeam({ team }: { team: Team }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Team Applications</CardTitle>
-        <CardDescription>People who want to join your team</CardDescription>
+        <CardTitle className="text-center">Team Applications</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

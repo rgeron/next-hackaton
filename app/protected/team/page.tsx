@@ -57,16 +57,23 @@ export default async function TeamPage() {
 
         {teamResult && (
           <div className="space-y-8">
-            <h1 className="text-2xl font-bold text-center mb-5">Information about your team</h1>
+            {isTeamCreator && (
+              <>
+                <h1 className="text-2xl font-bold text-center">
+                  Manage your team
+                </h1>
+                {applications.length > 0 && (
+                  <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
+                    <ApplicationsToYourTeam team={teamResult} />
+                  </div>
+                )}
+              </>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <TeamInfo team={teamResult} />
               <TeamMemberInfo team={teamResult} />
             </div>
-            {isTeamCreator && applications.length > 0 && (
-              <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-                <ApplicationsToYourTeam team={teamResult} />
-              </div>
-            )}
           </div>
         )}
       </div>
