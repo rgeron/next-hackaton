@@ -74,6 +74,69 @@ export async function applyToTeam(application: InteractionRequest) {
   return { data: interaction };
 }
 
+export async function inviteToTeam(invitation: {
+  team_id: number;
+  receiver_id: string;
+  message: string;
+}) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  // Verify user is team creator
+  const { data: team } = await supabase
+    .from("teams")
+    .select("creator_id, members, max_members")
+    .eq("id", invitation.team_id)
+    .single();
+
+  if (!team || team.creator_id !== user.id) {
+    return { error: "Not authorized" };
+  }
+
+  // Check if team is full
+  if (team.members.length >= team.max_members) {
+    return { error: "Team is already full" };
+  }
+
+  // Check if user is already invited
+  const { data: existingInvite } = await supabase
+    .from("interactions")
+    .select("*")
+    .eq("team_involved_id", invitation.team_id)
+    .eq("receiver_id", invitation.receiver_id)
+    .eq("type", "team_invite")
+    .eq("status", "pending")
+    .single();
+
+  if (existingInvite) {
+    return { error: "User already has a pending invitation" };
+  }
+
+  // Create interaction
+  const { data: interaction, error } = await supabase
+    .from("interactions")
+    .insert({
+      type: "team_invite",
+      status: "pending",
+      message: invitation.message,
+      sender_id: user.id,
+      receiver_id: invitation.receiver_id,
+      team_involved_id: invitation.team_id,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return { error: `Failed to create invitation: ${error.message}` };
+  }
+
+  return { data: interaction };
+}
+
 export async function respondToInteraction(
   interactionId: number,
   accept: boolean
@@ -231,67 +294,4 @@ export async function respondToInteraction(
 
   if (error) return { error: error.message };
   return { data };
-}
-
-export async function inviteToTeam(invitation: {
-  team_id: number;
-  receiver_id: string;
-  message: string;
-}) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
-  // Verify user is team creator
-  const { data: team } = await supabase
-    .from("teams")
-    .select("creator_id, members, max_members")
-    .eq("id", invitation.team_id)
-    .single();
-
-  if (!team || team.creator_id !== user.id) {
-    return { error: "Not authorized" };
-  }
-
-  // Check if team is full
-  if (team.members.length >= team.max_members) {
-    return { error: "Team is already full" };
-  }
-
-  // Check if user is already invited
-  const { data: existingInvite } = await supabase
-    .from("interactions")
-    .select("*")
-    .eq("team_involved_id", invitation.team_id)
-    .eq("receiver_id", invitation.receiver_id)
-    .eq("type", "team_invite")
-    .eq("status", "pending")
-    .single();
-
-  if (existingInvite) {
-    return { error: "User already has a pending invitation" };
-  }
-
-  // Create interaction
-  const { data: interaction, error } = await supabase
-    .from("interactions")
-    .insert({
-      type: "team_invite",
-      status: "pending",
-      message: invitation.message,
-      sender_id: user.id,
-      receiver_id: invitation.receiver_id,
-      team_involved_id: invitation.team_id,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    return { error: `Failed to create invitation: ${error.message}` };
-  }
-
-  return { data: interaction };
 }
