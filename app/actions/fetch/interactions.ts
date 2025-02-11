@@ -59,7 +59,9 @@ export async function fetchUserInvites() {
     .from("interactions")
     .select(
       `
-      *,
+      id,
+      created_at,
+      status,
       team:team_involved_id(
         id,
         name,
@@ -82,38 +84,5 @@ export async function fetchUserInvites() {
     .order("created_at", { ascending: false });
 
   if (error) return { error: error.message };
-  return { data: invites };
-}
-
-
-export async function getTeamInvitations() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
-  // Get user's pending invites directly from their record
-  const { data, error } = await supabase
-    .from("users")
-    .select("pending_team_invites, teams!inner(id, name)")
-    .eq("id", user.id)
-    .eq("pending_team_invites[].status", "pending")
-    .single();
-
-  if (error) return { error: error.message };
-  if (!data?.pending_team_invites) return { data: [] };
-
-  // Transform the data to match the expected format
-  const invites = data.pending_team_invites.map((invite: any) => ({
-    team_id: invite.team_id,
-    team_name:
-      data.teams.find((t: any) => t.id === invite.team_id)?.name ||
-      "Unknown Team",
-    role: "Member",
-    invited_at: invite.invited_at,
-  }));
-
   return { data: invites };
 }
