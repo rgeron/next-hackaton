@@ -30,16 +30,13 @@ export function TeamMemberInfo(props: { team: Team }) {
   }, [props.team.members]);
 
   return (
-    <div className="w-full overflow-x-auto pb-4">
-      <div className="flex gap-4 min-w-full">
+    <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {props.team.members?.map((member) => {
           const userInfo = membersInfo.find((u) => u.id === member.user_id);
 
           return (
-            <div
-              key={member.user_id || member.name}
-              className="w-[300px] flex-none"
-            >
+            <div key={member.user_id || member.name} className="w-full">
               <div className="bg-card rounded-lg p-4 h-full space-y-2">
                 <h3 className="font-semibold">{member.name}</h3>
                 <p className="text-muted-foreground text-sm">{member.role}</p>

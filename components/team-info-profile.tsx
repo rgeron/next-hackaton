@@ -202,10 +202,10 @@ export function TeamInfo({ team }: { team: Team }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border p-4">
+      <div className="rounded-lg border p-3 sm:p-4">
         {isEditing ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
+          <div className="space-y-6">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <span className="font-medium block">Name</span>
                 <Input
@@ -213,7 +213,6 @@ export function TeamInfo({ team }: { team: Team }) {
                   onChange={(e) =>
                     setEditData({ ...editData, name: e.target.value })
                   }
-                  className="mt-1"
                 />
               </div>
               <div className="space-y-2">
@@ -228,8 +227,8 @@ export function TeamInfo({ team }: { team: Team }) {
               </div>
             </div>
 
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+            <div className="space-y-4">
+              <div className="space-y-2">
                 <span className="font-medium block">Project Type</span>
                 <select
                   value={editData.project_type}
@@ -240,7 +239,7 @@ export function TeamInfo({ team }: { team: Team }) {
                         .value as TeamCreate["project_type"],
                     })
                   }
-                  className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2"
                 >
                   <option value="physical product">Physical Product</option>
                   <option value="website">Website</option>
@@ -249,7 +248,7 @@ export function TeamInfo({ team }: { team: Team }) {
                 </select>
               </div>
 
-              <div className="sm:col-span-2">
+              <div className="space-y-2">
                 <span className="font-medium block">Looking for</span>
                 <Input
                   value={editData.looking_for?.join(", ")}
@@ -262,21 +261,24 @@ export function TeamInfo({ team }: { team: Team }) {
                     })
                   }
                   placeholder="Separate roles with commas"
-                  className="mt-1"
                 />
               </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <span className="font-medium block">Name</span>
-              <p className="text-muted-foreground mt-2">{team.name}</p>
-              <span className="font-medium block">Description</span>
-              <p className="text-muted-foreground mt-2">{team.description}</p>
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <span className="font-medium block">Name</span>
+                <p className="text-muted-foreground mt-2">{team.name}</p>
+              </div>
+              <div>
+                <span className="font-medium block">Description</span>
+                <p className="text-muted-foreground mt-2">{team.description}</p>
+              </div>
             </div>
 
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
                 <span className="font-medium block">Project Type</span>
                 <span className="text-muted-foreground block mt-2">
@@ -284,7 +286,7 @@ export function TeamInfo({ team }: { team: Team }) {
                 </span>
               </div>
 
-              <div className="sm:col-span-2">
+              <div>
                 <span className="font-medium block">Looking for</span>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {team.looking_for.map((role) => (
@@ -303,8 +305,8 @@ export function TeamInfo({ team }: { team: Team }) {
       </div>
 
       {isTeamCreator && (
-        <div className="flex justify-between items-center gap-4 pt-4">
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-2">
             <EditTeamButton
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
