@@ -54,7 +54,7 @@ export function TeamMemberInfo(props: { team: Team }) {
                     )}
                     {userInfo.skills && userInfo.skills.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {userInfo.skills.map((skill) => (
+                        {userInfo.skills.map((skill: string) => (
                           <span
                             key={skill}
                             className="text-xs bg-secondary px-2 py-1 rounded"
