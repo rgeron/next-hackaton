@@ -28,6 +28,108 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
+function EditTeamButton(props: {
+  isEditing: boolean;
+  onEdit: () => void;
+  onSave: () => void;
+}) {
+  return props.isEditing ? (
+    <Button onClick={props.onSave} variant="default">
+      Save Changes
+    </Button>
+  ) : (
+    <Button onClick={props.onEdit} variant="outline" size="sm">
+      Edit Team
+    </Button>
+  );
+}
+
+function DeleteTeamButton(props: { onDelete: () => Promise<void> }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="sm">
+          Delete Team
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your team
+            and remove all members.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={props.onDelete}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function AddTeamMemberButton(props: {
+  isAddingMember: boolean;
+  setIsAddingMember: (value: boolean) => void;
+  newMember: { name: string; role: string };
+  setNewMember: (
+    value:
+      | { name: string; role: string }
+      | ((prev: { name: string; role: string }) => {
+          name: string;
+          role: string;
+        })
+  ) => void;
+  onAddMember: () => Promise<void>;
+}) {
+  return (
+    <Dialog open={props.isAddingMember} onOpenChange={props.setIsAddingMember}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          Add Team Member
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Team Member</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Name</Label>
+            <Input
+              value={props.newMember.name}
+              onChange={(e) =>
+                props.setNewMember((prev) => ({
+                  ...prev,
+                  name: e.target.value,
+                }))
+              }
+              placeholder="Member's name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Role</Label>
+            <Input
+              value={props.newMember.role}
+              onChange={(e) =>
+                props.setNewMember((prev) => ({
+                  ...prev,
+                  role: e.target.value,
+                }))
+              }
+              placeholder="e.g. Frontend Developer"
+            />
+          </div>
+          <Button onClick={props.onAddMember} className="w-full">
+            Add Member
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function TeamInfo({ team }: { team: Team }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -100,55 +202,7 @@ export function TeamInfo({ team }: { team: Team }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-center justify-center p-4">
-        <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
-        {isTeamCreator && (
-          <Dialog open={isAddingMember} onOpenChange={setIsAddingMember}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                Add Team Member
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Team Member</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Name</Label>
-                  <Input
-                    value={newMember.name}
-                    onChange={(e) =>
-                      setNewMember((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="Member's name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Input
-                    value={newMember.role}
-                    onChange={(e) =>
-                      setNewMember((prev) => ({
-                        ...prev,
-                        role: e.target.value,
-                      }))
-                    }
-                    placeholder="e.g. Frontend Developer"
-                  />
-                </div>
-                <Button onClick={handleAddMember} className="w-full">
-                  Add Member
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
-
+      <h1 className="text-2xl font-bold text-center">Your Team</h1>
       <div className="rounded-lg border p-4 space-y-4">
         {isEditing ? (
           <div className="space-y-4">
@@ -243,42 +297,24 @@ export function TeamInfo({ team }: { team: Team }) {
       </div>
 
       {isTeamCreator && (
-        <div className="flex justify-between items-center pt-4">
-          {isEditing ? (
-            <Button onClick={handleUpdateTeam} variant="default">
-              Save Changes
-            </Button>
-          ) : (
-            <Button
-              onClick={() => setIsEditing(true)}
-              variant="outline"
-              size="sm"
-            >
-              Edit Team
-            </Button>
-          )}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                Delete Team
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your team and remove all members.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteTeam}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center pt-4">
+            <EditTeamButton
+              isEditing={isEditing}
+              onEdit={() => setIsEditing(true)}
+              onSave={handleUpdateTeam}
+            />
+            <DeleteTeamButton onDelete={handleDeleteTeam} />
+          </div>
+          <div className="flex flex-col items-center justify-center p-4">
+            <AddTeamMemberButton
+              isAddingMember={isAddingMember}
+              setIsAddingMember={setIsAddingMember}
+              newMember={newMember}
+              setNewMember={setNewMember}
+              onAddMember={handleAddMember}
+            />
+          </div>
         </div>
       )}
     </div>

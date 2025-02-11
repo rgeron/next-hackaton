@@ -51,7 +51,6 @@ export default async function TeamPage() {
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <TeamInfo team={teamResult} />
-
               <TeamMemberInfo team={teamResult} />
             </div>
             {isTeamCreator && applications.length > 0 && (
