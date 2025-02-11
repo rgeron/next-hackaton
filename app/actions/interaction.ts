@@ -86,19 +86,43 @@ export async function respondToInteraction(
   if (!user) return { error: "Not authenticated" };
 
   // Get interaction details
-  const { data: interaction } = await supabase
+  const { data: interaction, error: interactionError } = await supabase
     .from("interactions")
-    .select("*, team:teams(*)")
+    .select(
+      `
+      *,
+      team:teams (
+        id,
+        name,
+        description,
+        max_members,
+        creator_id,
+        created_at,
+        project_type,
+        looking_for,
+        members
+      )
+    `
+    )
     .eq("id", interactionId)
     .single();
 
-  console.log("Interaction data:", {
-    interaction,
-    type: interaction?.type,
-    teamMembers: interaction?.team?.members,
-  });
-
+  if (interactionError) return { error: interactionError.message };
   if (!interaction) return { error: "Interaction not found" };
+
+  console.log(
+    "Interaction data:",
+    JSON.stringify(
+      {
+        interaction,
+        type: interaction?.type,
+        teamMembers: interaction?.team?.members,
+      },
+      null,
+      2
+    )
+  );
+
   if (interaction.receiver_id !== user.id) return { error: "Not authorized" };
 
   if (accept) {
@@ -116,7 +140,7 @@ export async function respondToInteraction(
         .single();
 
       // Add user to team
-      const { error: teamError } = await supabase
+      const { error: teamError, data: teamUpdateResult } = await supabase
         .from("teams")
         .update({
           members: [
@@ -130,9 +154,17 @@ export async function respondToInteraction(
             },
           ],
         })
-        .eq("id", interaction.team_involved_id);
+        .eq("id", interaction.team_involved_id)
+        .select("*");
+
+      console.log("Team update result:", {
+        teamUpdateResult,
+        error: teamError,
+      });
 
       if (teamError) return { error: teamError.message };
+      if (!teamUpdateResult?.length)
+        return { error: "Failed to update team members" };
 
       // Update user's has_team status
       const { error: userError } = await supabase
@@ -154,50 +186,33 @@ export async function respondToInteraction(
         .eq("id", interaction.receiver_id)
         .single();
 
-      console.log("Invitee data:", invitee);
-
-      const newMember = {
-        user_id: interaction.receiver_id,
-        name: invitee?.full_name || "",
-        role: "Member",
-        joined_at: new Date().toISOString(),
-        is_registered: true,
-      };
-
-      const updatedMembers = [...(interaction.team.members || []), newMember];
-      console.log("Attempting to update members:", {
-        currentMembers: interaction.team.members,
-        newMember,
-        updatedMembers,
-      });
-
-      // Add user to team
+      // Add user to team (using same logic as team_application)
       const { error: teamError, data: teamUpdateResult } = await supabase
         .from("teams")
         .update({
-          members: updatedMembers,
+          members: [
+            ...interaction.team.members,
+            {
+              user_id: interaction.receiver_id,
+              name: invitee?.full_name || "",
+              role: "Member",
+              joined_at: new Date().toISOString(),
+              is_registered: true,
+            },
+          ],
         })
         .eq("id", interaction.team_involved_id)
-        .select();
-
-      console.log("Team update result:", {
-        teamUpdateResult,
-        error: teamError,
-      });
+        .select("*");
 
       if (teamError) return { error: teamError.message };
+      if (!teamUpdateResult?.length)
+        return { error: "Failed to update team members" };
 
       // Update user's has_team status
-      const { error: userError, data: userUpdateResult } = await supabase
+      const { error: userError } = await supabase
         .from("users")
         .update({ has_team: true })
-        .eq("id", interaction.receiver_id)
-        .select();
-
-      console.log("User update result:", {
-        userUpdateResult,
-        error: userError,
-      });
+        .eq("id", interaction.receiver_id);
 
       if (userError) return { error: userError.message };
     }
@@ -212,7 +227,7 @@ export async function respondToInteraction(
     })
     .eq("id", interactionId)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) return { error: error.message };
   return { data };
