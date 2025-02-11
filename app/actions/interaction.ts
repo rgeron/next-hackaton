@@ -95,45 +95,86 @@ export async function respondToInteraction(
   if (!interaction) return { error: "Interaction not found" };
   if (interaction.receiver_id !== user.id) return { error: "Not authorized" };
 
-  if (accept && interaction.type === "team_application") {
-    // Check if team still has space
-    if (interaction.team.members.length >= interaction.team.max_members) {
-      return { error: "Team is already full" };
+  if (accept) {
+    if (interaction.type === "team_application") {
+      // Check if team still has space
+      if (interaction.team.members.length >= interaction.team.max_members) {
+        return { error: "Team is already full" };
+      }
+
+      // Get applicant details
+      const { data: applicant } = await supabase
+        .from("users")
+        .select("full_name")
+        .eq("id", interaction.sender_id)
+        .single();
+
+      // Add user to team
+      const { error: teamError } = await supabase
+        .from("teams")
+        .update({
+          members: [
+            ...interaction.team.members,
+            {
+              user_id: interaction.sender_id,
+              name: applicant?.full_name || "",
+              role: "Member",
+              joined_at: new Date().toISOString(),
+              is_registered: true,
+            },
+          ],
+        })
+        .eq("id", interaction.team_involved_id);
+
+      if (teamError) return { error: teamError.message };
+
+      // Update user's has_team status
+      const { error: userError } = await supabase
+        .from("users")
+        .update({ has_team: true })
+        .eq("id", interaction.sender_id);
+
+      if (userError) return { error: userError.message };
+    } else if (interaction.type === "team_invite") {
+      // Check if team still has space
+      if (interaction.team.members.length >= interaction.team.max_members) {
+        return { error: "Team is already full" };
+      }
+
+      // Get invitee details
+      const { data: invitee } = await supabase
+        .from("users")
+        .select("full_name")
+        .eq("id", interaction.receiver_id)
+        .single();
+
+      // Add user to team
+      const { error: teamError } = await supabase
+        .from("teams")
+        .update({
+          members: [
+            ...interaction.team.members,
+            {
+              user_id: interaction.receiver_id,
+              name: invitee?.full_name || "",
+              role: "Member",
+              joined_at: new Date().toISOString(),
+              is_registered: true,
+            },
+          ],
+        })
+        .eq("id", interaction.team_involved_id);
+
+      if (teamError) return { error: teamError.message };
+
+      // Update user's has_team status
+      const { error: userError } = await supabase
+        .from("users")
+        .update({ has_team: true })
+        .eq("id", interaction.receiver_id);
+
+      if (userError) return { error: userError.message };
     }
-
-    // Get applicant details
-    const { data: applicant } = await supabase
-      .from("users")
-      .select("full_name")
-      .eq("id", interaction.sender_id)
-      .single();
-
-    // Add user to team
-    const { error: teamError } = await supabase
-      .from("teams")
-      .update({
-        members: [
-          ...interaction.team.members,
-          {
-            user_id: interaction.sender_id,
-            name: applicant?.full_name || "",
-            role: "Member",
-            joined_at: new Date().toISOString(),
-            is_registered: true,
-          },
-        ],
-      })
-      .eq("id", interaction.team_involved_id);
-
-    if (teamError) return { error: teamError.message };
-
-    // Update user's has_team status
-    const { error: userError } = await supabase
-      .from("users")
-      .update({ has_team: true })
-      .eq("id", interaction.sender_id);
-
-    if (userError) return { error: userError.message };
   }
 
   // Update interaction status
