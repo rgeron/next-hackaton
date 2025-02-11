@@ -56,14 +56,14 @@ export default async function TeamPage() {
         )}
 
         {teamResult && (
-          <div className="space-y-8">
+          <div className="">
             {isTeamCreator && (
               <>
                 <h1 className="text-2xl font-bold text-center">
                   Manage your team
                 </h1>
                 {applications.length > 0 && (
-                  <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
+                  <div className="bg-card p-3 rounded-lg">
                     <ApplicationsToYourTeam team={teamResult} />
                   </div>
                 )}
