@@ -13,7 +13,6 @@ export function TeamMemberInfo(props: { team: Team }) {
 
   useEffect(() => {
     const fetchMembersInfo = async () => {
-      // Only fetch info for registered members
       const registeredMembers = props.team.members.filter(
         (m) => m.is_registered && m.user_id
       );
@@ -33,21 +32,82 @@ export function TeamMemberInfo(props: { team: Team }) {
   return (
     <div className="w-full overflow-x-auto pb-4">
       <div className="flex gap-4 min-w-full">
-        {props.team.members?.map((member) => (
-          <div key={member.user_id} className="w-[300px] flex-none">
-            <div className="bg-card rounded-lg p-4 h-full">
-              <h3 className="font-semibold">{member.name}</h3>
-              <p className="text-muted-foreground text-sm mt-1">
-                {member.role}
-              </p>
-              {member.user_id === props.team.creator_id && (
-                <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded mt-2">
-                  Team Creator
-                </span>
-              )}
+        {props.team.members?.map((member) => {
+          const userInfo = membersInfo.find((u) => u.id === member.user_id);
+
+          return (
+            <div
+              key={member.user_id || member.name}
+              className="w-[300px] flex-none"
+            >
+              <div className="bg-card rounded-lg p-4 h-full space-y-2">
+                <h3 className="font-semibold">{member.name}</h3>
+                <p className="text-muted-foreground text-sm">{member.role}</p>
+
+                {member.is_registered && userInfo && (
+                  <>
+                    <p className="text-sm">{userInfo.school}</p>
+                    {userInfo.bio && (
+                      <p className="text-sm text-muted-foreground">
+                        {userInfo.bio}
+                      </p>
+                    )}
+                    {userInfo.skills && userInfo.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {userInfo.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="text-xs bg-secondary px-2 py-1 rounded"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      {userInfo.links.github && (
+                        <a
+                          href={userInfo.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          GitHub
+                        </a>
+                      )}
+                      {userInfo.links.linkedin && (
+                        <a
+                          href={userInfo.links.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          LinkedIn
+                        </a>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                <div className="flex flex-wrap gap-2">
+                  {member.user_id === props.team.creator_id && (
+                    <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded">
+                      Team Creator
+                    </span>
+                  )}
+                  {!member.is_registered && (
+                    <span className="inline-block px-2 py-1 bg-yellow-500/10 text-yellow-500 text-xs rounded">
+                      Manual Entry
+                    </span>
+                  )}
+                  <span className="inline-block px-2 py-1 bg-secondary text-xs rounded">
+                    Joined {new Date(member.joined_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
