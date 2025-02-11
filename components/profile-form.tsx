@@ -53,8 +53,6 @@ const businessSkills = [
   "Sales",
 ] as const;
 
-const allSkills = [...technicalSkills, ...businessSkills] as const;
-
 const profileSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
   school: z.enum(schools),
@@ -85,16 +83,6 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
     },
   });
 
-  const selectedSkills = form.watch("skills");
-
-  const toggleSkill = (skill: (typeof allSkills)[number]) => {
-    const current = form.getValues("skills");
-    const updated = current.includes(skill)
-      ? current.filter((s) => s !== skill)
-      : [...current, skill];
-    form.setValue("skills", updated);
-  };
-
   async function onSubmit(data: ProfileFormValues) {
     const result = await updateUserProfile(data);
     if (result.error) {
@@ -106,7 +94,10 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 w-full border-2 rounded-xl p-4"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <FormField
             control={form.control}
