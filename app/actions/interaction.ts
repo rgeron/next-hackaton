@@ -92,6 +92,12 @@ export async function respondToInteraction(
     .eq("id", interactionId)
     .single();
 
+  console.log("Interaction data:", {
+    interaction,
+    type: interaction?.type,
+    teamMembers: interaction?.team?.members,
+  });
+
   if (!interaction) return { error: "Interaction not found" };
   if (interaction.receiver_id !== user.id) return { error: "Not authorized" };
 
@@ -148,30 +154,50 @@ export async function respondToInteraction(
         .eq("id", interaction.receiver_id)
         .single();
 
+      console.log("Invitee data:", invitee);
+
+      const newMember = {
+        user_id: interaction.receiver_id,
+        name: invitee?.full_name || "",
+        role: "Member",
+        joined_at: new Date().toISOString(),
+        is_registered: true,
+      };
+
+      const updatedMembers = [...(interaction.team.members || []), newMember];
+      console.log("Attempting to update members:", {
+        currentMembers: interaction.team.members,
+        newMember,
+        updatedMembers,
+      });
+
       // Add user to team
-      const { error: teamError } = await supabase
+      const { error: teamError, data: teamUpdateResult } = await supabase
         .from("teams")
         .update({
-          members: [
-            ...interaction.team.members,
-            {
-              user_id: interaction.receiver_id,
-              name: invitee?.full_name || "",
-              role: "Member",
-              joined_at: new Date().toISOString(),
-              is_registered: true,
-            },
-          ],
+          members: updatedMembers,
         })
-        .eq("id", interaction.team_involved_id);
+        .eq("id", interaction.team_involved_id)
+        .select();
+
+      console.log("Team update result:", {
+        teamUpdateResult,
+        error: teamError,
+      });
 
       if (teamError) return { error: teamError.message };
 
       // Update user's has_team status
-      const { error: userError } = await supabase
+      const { error: userError, data: userUpdateResult } = await supabase
         .from("users")
         .update({ has_team: true })
-        .eq("id", interaction.receiver_id);
+        .eq("id", interaction.receiver_id)
+        .select();
+
+      console.log("User update result:", {
+        userUpdateResult,
+        error: userError,
+      });
 
       if (userError) return { error: userError.message };
     }
