@@ -1,4 +1,4 @@
-import { getTeamInvitations } from "@/app/actions/fetch/teams";
+import { getTeamInvitations } from "@/app/actions/fetch/interactions";
 import { getUserProfile } from "@/app/actions/profile";
 import { ProfileForm } from "@/components/profile-form";
 
