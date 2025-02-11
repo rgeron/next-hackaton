@@ -73,10 +73,10 @@ export async function createTeam(teamData: TeamCreate) {
 
   if (teamError) return { error: teamError.message };
 
-  // Update user's has_team status
+  // Update user's has_team status and is_team_creator
   const { error: userError } = await supabase
     .from("users")
-    .update({ has_team: true })
+    .update({ has_team: true, is_team_creator: true })
     .eq("id", user.id);
 
   if (userError) {
@@ -156,6 +156,14 @@ export async function deleteTeam(teamId: number) {
 
     if (userError) return { error: userError.message };
   }
+
+  // Update creator's is_team_creator status
+  const { error: creatorError } = await supabase
+    .from("users")
+    .update({ is_team_creator: false })
+    .eq("id", user.id);
+
+  if (creatorError) return { error: creatorError.message };
 
   // Delete team
   const { error } = await supabase.from("teams").delete().eq("id", teamId);
