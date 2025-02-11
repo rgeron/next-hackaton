@@ -99,7 +99,7 @@ export function TeamInfo({ team }: { team: Team }) {
   };
 
   return (
-    <div className="space-y-4 border-2 rounded-lg p-4">
+    <div className="space-y-4">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold mb-4">Your Team</h2>
         {isTeamCreator && (

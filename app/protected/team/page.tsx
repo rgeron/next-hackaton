@@ -29,7 +29,7 @@ export default async function TeamPage() {
     )?.user_id;
 
   return (
-    <main className="min-h-screen w-full py-4 sm:py-8">
+    <main className="min-h-screen w-full p-4 sm:py-8">
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 max-w-[90rem]">
         {!teamResult && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -39,7 +39,9 @@ export default async function TeamPage() {
               </div>
             )}
             <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-              <h1 className="text-2xl font-bold text-center mb-5">Create your own team</h1>
+              <h1 className="text-2xl font-bold text-center mb-5">
+                Create your own team
+              </h1>
               <CreateTeamForm />
             </div>
           </div>
@@ -48,12 +50,9 @@ export default async function TeamPage() {
         {teamResult && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-                <TeamInfo team={teamResult} />
-              </div>
-              <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-                <TeamMemberInfo team={teamResult} />
-              </div>
+              <TeamInfo team={teamResult} />
+
+              <TeamMemberInfo team={teamResult} />
             </div>
             {isTeamCreator && applications.length > 0 && (
               <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
