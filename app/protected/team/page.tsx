@@ -32,23 +32,32 @@ export default async function TeamPage() {
     <main className="min-h-screen w-full p-4 sm:py-8">
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 max-w-[90rem]">
         {!teamResult && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {invites.length > 0 && (
+          <div>
+            <h1 className="text-2xl font-bold text-center mb-5">
+              You don't have a team yet !
+            </h1>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {invites.length > 0 && (
+                <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
+                  <h2 className="text-xl font-bold text-center mb-5">
+                    Join a team
+                  </h2>
+                  <TeamInvitations invites={invites} />
+                </div>
+              )}
               <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-                <TeamInvitations invites={invites} />
+                <h2 className="text-xl font-bold text-center mb-5">
+                  Create your own team
+                </h2>
+                <CreateTeamForm />
               </div>
-            )}
-            <div className="bg-card p-3 sm:p-8 lg:p-12 rounded-lg">
-              <h1 className="text-2xl font-bold text-center mb-5">
-                Create your own team
-              </h1>
-              <CreateTeamForm />
             </div>
           </div>
         )}
 
         {teamResult && (
           <div className="space-y-8">
+            <h1 className="text-2xl font-bold text-center mb-5">Information about your team</h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <TeamInfo team={teamResult} />
               <TeamMemberInfo team={teamResult} />

@@ -202,8 +202,6 @@ export function TeamInfo({ team }: { team: Team }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-center">Your Team</h1>
-
       <div className="border-2 rounded-lg p-4">
         <h2 className="text-xl font-bold text-center mb-4">Team Information</h2>
         <div className="rounded-lg border p-4 space-y-4">
