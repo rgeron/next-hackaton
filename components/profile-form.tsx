@@ -106,7 +106,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder="enter your name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -149,8 +149,8 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="+33 6 12 34 56 78"
-                    type="tel"
+                    placeholder=". .   . .   . .   . .   . ."
+                    type="tel" 
                     {...field}
                   />
                 </FormControl>
