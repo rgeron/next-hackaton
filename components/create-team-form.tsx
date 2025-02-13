@@ -19,10 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Team } from "@/lib/types/database.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -55,7 +53,6 @@ const formSchema = z.object({
 
 export function CreateTeamForm() {
   const router = useRouter();
-  const [createdTeam, setCreatedTeam] = useState<Team | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -76,66 +73,15 @@ export function CreateTeamForm() {
     }
 
     toast.success("Team created successfully!");
-    setCreatedTeam(data);
     router.refresh();
-  }
-
-  const copyInviteLink = () => {
-    if (!createdTeam) return;
-    const inviteLink = `${window.location.origin}/invite/${createdTeam.id}`;
-    navigator.clipboard.writeText(inviteLink);
-    toast.success("Invite link copied to clipboard!");
-  };
-
-  if (createdTeam) {
-    return (
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <h3 className="font-semibold">Team Created!</h3>
-          <p className="text-sm text-muted-foreground">
-            Your team has been created successfully. Share the invite link with
-            your teammates.
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <h4 className="font-medium">Team Details</h4>
-            <Button onClick={copyInviteLink} variant="outline" size="sm">
-              Copy Invite Link
-            </Button>
-          </div>
-          <div className="rounded-lg border p-3 space-y-3">
-            <div>
-              <span className="text-sm font-medium">Name:</span>
-              <span className="text-sm ml-2">{createdTeam.name}</span>
-            </div>
-            <div>
-              <span className="text-sm font-medium">Project Type:</span>
-              <span className="text-sm ml-2">{createdTeam.project_type}</span>
-            </div>
-            <div>
-              <span className="text-sm font-medium">Looking for:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {createdTeam.looking_for.map((role) => (
-                  <span
-                    key={role}
-                    className="text-xs px-2 py-1 bg-secondary rounded-md"
-                  >
-                    {role}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 border-2 rounded-xl p-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 border-2 rounded-xl p-4"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
