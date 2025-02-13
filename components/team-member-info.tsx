@@ -2,6 +2,13 @@
 
 import { getUsersByIds } from "@/app/actions/fetch/users";
 import { Team } from "@/lib/types/database.types";
+import {
+  GithubIcon,
+  LinkedinIcon,
+  PhoneIcon,
+  SchoolIcon,
+  UserIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 type UserInfo = NonNullable<
@@ -38,12 +45,24 @@ export function TeamMemberInfo(props: { team: Team }) {
           return (
             <div key={member.user_id || member.name} className="w-full">
               <div className="bg-card rounded-lg p-4 h-full space-y-2">
-                <h3 className="font-semibold">{member.name}</h3>
+                <div className="flex items-center gap-2">
+                  <UserIcon className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="font-semibold">{member.name}</h3>
+                </div>
                 <p className="text-muted-foreground text-sm">{member.role}</p>
 
                 {member.is_registered && userInfo && (
                   <>
-                    <p className="text-sm">{userInfo.school}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <SchoolIcon className="h-4 w-4" />
+                      <span>{userInfo.school}</span>
+                    </div>
+                    {userInfo.phone_number && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <PhoneIcon className="h-4 w-4" />
+                        <span>{userInfo.phone_number}</span>
+                      </div>
+                    )}
                     {userInfo.bio && (
                       <p className="text-sm text-muted-foreground">
                         {userInfo.bio}
@@ -61,25 +80,25 @@ export function TeamMemberInfo(props: { team: Team }) {
                         ))}
                       </div>
                     )}
-                    <div className="flex gap-2">
-                      {userInfo.links.github && (
+                    <div className="flex gap-4">
+                      {userInfo.links?.github && (
                         <a
                           href={userInfo.links.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
+                          className="text-muted-foreground hover:text-primary"
                         >
-                          GitHub
+                          <GithubIcon className="h-4 w-4" />
                         </a>
                       )}
-                      {userInfo.links.linkedin && (
+                      {userInfo.links?.linkedin && (
                         <a
                           href={userInfo.links.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
+                          className="text-muted-foreground hover:text-primary"
                         >
-                          LinkedIn
+                          <LinkedinIcon className="h-4 w-4" />
                         </a>
                       )}
                     </div>
