@@ -77,34 +77,6 @@ export function ProfileCard(props: { user: User }) {
           <CardTitle>{user.full_name}</CardTitle>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-        {!user.team_id && creatorTeamId && (
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                Invite to Team
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Invite {user.full_name} to Your Team</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <Textarea
-                  placeholder="Add a message to your invitation..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-                <Button
-                  className="w-full"
-                  onClick={handleInvite}
-                  disabled={!message.trim() || isPending}
-                >
-                  {isPending ? "Sending..." : "Send Invitation"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -153,6 +125,36 @@ export function ProfileCard(props: { user: User }) {
                 >
                   <LinkedinIcon className="h-4 w-4" />
                 </a>
+              )}
+              {!user.team_id && creatorTeamId && (
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Invite to Team
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="flex flex-col items-center">
+                    <DialogHeader>
+                      <DialogTitle>
+                        Invite {user.full_name} to Your Team
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4 w-full">
+                      <Textarea
+                        placeholder="Add a message to your invitation..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
+                      <Button
+                        className="w-full"
+                        onClick={handleInvite}
+                        disabled={!message.trim() || isPending}
+                      >
+                        {isPending ? "Sending..." : "Send Invitation"}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
           </div>
