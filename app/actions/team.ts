@@ -153,3 +153,46 @@ export async function deleteTeam(teamId: number) {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+export async function leaveTeam(teamId: number) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  // Get team data and verify user is a member but not creator
+  const { data: team } = await supabase
+    .from("teams")
+    .select("creator_id, members")
+    .eq("id", teamId)
+    .single();
+
+  if (!team) return { error: "Team not found" };
+  if (team.creator_id === user.id)
+    return { error: "Team creator cannot leave team" };
+
+  // Remove user from members array
+  const updatedMembers = (team.members ?? []).filter(
+    (member: { user_id?: string }) => member.user_id !== user.id
+  );
+
+  // Update team members
+  const { error: teamUpdateError } = await supabase
+    .from("teams")
+    .update({ members: updatedMembers })
+    .eq("id", teamId);
+
+  if (teamUpdateError) return { error: teamUpdateError.message };
+
+  // Update user's team_id
+  const { error: userUpdateError } = await supabase
+    .from("users")
+    .update({ team_id: null })
+    .eq("id", user.id);
+
+  if (userUpdateError) return { error: userUpdateError.message };
+
+  return { success: true };
+}

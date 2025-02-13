@@ -1,6 +1,11 @@
 "use client";
 
-import { deleteTeam, TeamCreate, updateTeam } from "@/app/actions/team";
+import {
+  deleteTeam,
+  leaveTeam,
+  TeamCreate,
+  updateTeam,
+} from "@/app/actions/team";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,6 +135,33 @@ function AddTeamMemberButton(props: {
   );
 }
 
+function LeaveTeamButton(props: { onLeave: () => Promise<void> }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="sm">
+          Leave Team
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action will remove you from the team. You can always join
+            another team or create your own later.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={props.onLeave}>
+            Leave Team
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 export function TeamInfo({
   team,
   isTeamCreator,
@@ -200,6 +232,21 @@ export function TeamInfo({
     toast.success("Member added successfully");
     setIsAddingMember(false);
     setNewMember({ name: "", role: "" });
+    router.refresh();
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!team?.id) {
+      toast.error("Team ID not found");
+      return;
+    }
+
+    const result = await leaveTeam(team.id);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("You have left the team");
     router.refresh();
   };
 
@@ -307,25 +354,29 @@ export function TeamInfo({
         )}
       </div>
 
-      {isTeamCreator && (
-        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <EditTeamButton
-              isEditing={isEditing}
-              onEdit={() => setIsEditing(true)}
-              onSave={handleUpdateTeam}
-            />
-            <AddTeamMemberButton
-              isAddingMember={isAddingMember}
-              setIsAddingMember={setIsAddingMember}
-              newMember={newMember}
-              setNewMember={setNewMember}
-              onAddMember={handleAddMember}
-            />
-          </div>
-          <DeleteTeamButton onDelete={handleDeleteTeam} />
-        </div>
-      )}
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4">
+        {isTeamCreator ? (
+          <>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <EditTeamButton
+                isEditing={isEditing}
+                onEdit={() => setIsEditing(true)}
+                onSave={handleUpdateTeam}
+              />
+              <AddTeamMemberButton
+                isAddingMember={isAddingMember}
+                setIsAddingMember={setIsAddingMember}
+                newMember={newMember}
+                setNewMember={setNewMember}
+                onAddMember={handleAddMember}
+              />
+            </div>
+            <DeleteTeamButton onDelete={handleDeleteTeam} />
+          </>
+        ) : (
+          <LeaveTeamButton onLeave={handleLeaveTeam} />
+        )}
+      </div>
     </div>
   );
 }
