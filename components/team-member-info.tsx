@@ -38,12 +38,13 @@ export function TeamMemberInfo(props: { team: Team }) {
 
   return (
     <div className="w-full">
+      <h2 className="text-2xl font-bold text-center mb-4">Team Members</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {props.team.members?.map((member) => {
           const userInfo = membersInfo.find((u) => u.id === member.user_id);
 
           return (
-            <div key={member.user_id || member.name} className="w-full">
+            <div key={member.user_id || member.name} className="w-full border p-4 rounded-lg">
               <div className="bg-card rounded-lg p-4 h-full space-y-2">
                 <div className="flex items-center gap-2">
                   <UserIcon className="h-4 w-4 text-muted-foreground" />
