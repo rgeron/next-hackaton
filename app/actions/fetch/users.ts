@@ -48,39 +48,6 @@ export async function getUser(userId: string) {
   return { data };
 }
 
-export async function getCurrentUser() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
-  return getUser(user.id);
-}
-
-export async function getUserApplications() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
-  const { data, error } = await supabase
-    .from("applications")
-    .select(
-      `
-      *,
-      teams(id, name, description, project_type, members)
-    `
-    )
-    .eq("user_id", user.id);
-
-  if (error) return { error: error.message };
-  return { data };
-}
-
 export async function getUsersByIds(userIds: string[]) {
   const supabase = await createClient();
 

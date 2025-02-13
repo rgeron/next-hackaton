@@ -42,3 +42,21 @@ export async function getTeam(teamId: string) {
   if (error) return { error: error.message };
   return { data };
 }
+
+export async function getUserTeam() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // Get user's team - check both creator_id and membership
+  const { data: teams, error } = await supabase
+    .from("teams")
+    .select("*")
+    .or(`creator_id.eq.${user.id},members.cs.{"user_id":"${user.id}"}`);
+
+  if (error) throw new Error(error.message);
+  return teams?.[0] || null;
+}
