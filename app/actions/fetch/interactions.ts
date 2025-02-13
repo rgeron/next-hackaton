@@ -33,7 +33,8 @@ export async function fetchTeamApplications(teamId: number) {
         email,
         school,
         skills,
-        links
+        links,
+        phone_number
       )
     `
     )
