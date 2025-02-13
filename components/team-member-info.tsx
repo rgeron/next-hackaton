@@ -98,7 +98,8 @@ export function TeamMemberInfo(props: { team: Team }) {
                     </span>
                   )}
                   <span className="inline-block px-2 py-1 bg-secondary text-xs rounded">
-                    Joined {new Date(member.joined_at).toLocaleDateString()}
+                    Joined{" "}
+                    {new Date(member.joined_at).toISOString().split("T")[0]}
                   </span>
                 </div>
               </div>
