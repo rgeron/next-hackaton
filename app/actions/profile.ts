@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export type UserProfile = {
   full_name: string;
-  school: "X" | "HEC" | "ENSAE" | "Centrale" | "ENSTA" | "";
+  school: string;
   bio?: string;
   phone_number?: string;
   skills?: string[];

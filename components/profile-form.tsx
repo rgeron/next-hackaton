@@ -26,7 +26,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-
 const profileSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
   school: z.string().optional(),
