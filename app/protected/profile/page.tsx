@@ -1,12 +1,8 @@
-import { fetchUserInvites } from "@/app/actions/fetch/interactions";
 import { getUserProfile } from "@/app/actions/profile";
 import { ProfileForm } from "@/components/profile-form";
 
 export default async function ProfilePage() {
   const { data: profile } = await getUserProfile();
-  const { data: invites = [] } = await fetchUserInvites();
-
-  console.log("Debug - Team Invitations:", { invites });
 
   return (
     <main className="min-h-screen w-full py-4 sm:py-8">
