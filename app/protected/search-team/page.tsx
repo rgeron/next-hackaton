@@ -18,8 +18,8 @@ export async function SearchPage() {
   const hasTeam = !!userData?.team_id;
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Find Your Team</h1>
+    <div className="w-full max-w-6xl mx-auto8">
+      <h1 className="text-2xl font-bold mb-6 text-center">Find Your Team</h1>
 
       {error && (
         <div className="p-4 rounded-lg border border-destructive">
