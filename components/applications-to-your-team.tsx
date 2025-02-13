@@ -3,16 +3,11 @@
 import { fetchTeamApplications } from "@/app/actions/fetch/interactions";
 import { respondToInteraction } from "@/app/actions/interaction";
 import { Team } from "@/lib/types/database.types";
+import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 type ApplicationWithUser = {
   id: number;
@@ -25,6 +20,11 @@ type ApplicationWithUser = {
     email: string;
     school: string;
     skills: string[] | null;
+    phone_number: string | null;
+    links: {
+      github: string | null;
+      linkedin: string | null;
+    } | null;
   };
 };
 
@@ -82,9 +82,38 @@ export function ApplicationsToYourTeam({ team }: { team: Team }) {
                 <p className="text-sm text-muted-foreground">
                   {application.applicant.email}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  School: {application.applicant.school}
-                </p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <SchoolIcon className="h-4 w-4" />
+                  {application.applicant.school}
+                </div>
+                {application.applicant.phone_number && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <PhoneIcon className="h-4 w-4" />
+                    {application.applicant.phone_number}
+                  </div>
+                )}
+                <div className="flex gap-4 mt-1">
+                  {application.applicant.links?.github && (
+                    <a
+                      href={application.applicant.links.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-primary"
+                    >
+                      <GithubIcon className="h-4 w-4" />
+                    </a>
+                  )}
+                  {application.applicant.links?.linkedin && (
+                    <a
+                      href={application.applicant.links.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-primary"
+                    >
+                      <LinkedinIcon className="h-4 w-4" />
+                    </a>
+                  )}
+                </div>
                 {application.applicant.skills && (
                   <div className="flex flex-wrap gap-1 mt-1">
                     {application.applicant.skills.map((skill, index) => (
