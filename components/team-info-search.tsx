@@ -51,15 +51,15 @@ export function TeamInfoSearch({
   };
 
   return (
-    <div className="p-6 space-y-4 border-2 rounded-md">
+    <div className="p-4 space-y-4 border-2 rounded-md">
       <div>
         <h2 className="text-lg font-semibold">Team: {team.name}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base font-semibold text-muted-foreground">
           Project: {team.description}
         </p>
       </div>
 
-      <div className="rounded-lg border p-4 space-y-4">
+      <div className="space-y-4">
         <div>
           <span className="font-medium">Project Type:</span>
           <span className="ml-2">{team.project_type}</span>
