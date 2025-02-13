@@ -2,25 +2,24 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-export async function getUsers(filters?: {
-  school?: "X" | "HEC" | "ENSAE" | "Centrale" | "ENSTA";
-  has_team?: boolean;
-  skills?: string[];
-}) {
+export type UserFilters = {
+  search?: string;
+  hasTeam?: boolean;
+};
+
+export async function getUsers(filters?: UserFilters) {
   const supabase = await createClient();
 
   let query = supabase.from("users").select("*");
 
-  if (filters?.school) {
-    query = query.eq("school", filters.school);
+  if (filters?.search) {
+    query = query.ilike("full_name", `%${filters.search}%`);
   }
 
-  if (filters?.has_team !== undefined) {
-    query = query.eq("has_team", filters.has_team);
-  }
-
-  if (filters?.skills?.length) {
-    query = query.contains("skills", filters.skills);
+  if (filters?.hasTeam !== undefined) {
+    query = filters.hasTeam
+      ? query.not("team_id", "is", null)
+      : query.is("team_id", null);
   }
 
   const { data, error } = await query;
@@ -42,7 +41,7 @@ export async function getUsersByIds(userIds: string[]) {
 }
 
 export async function getUsersWithoutTeam() {
-  const { data, error } = await getUsers({ has_team: false });
+  const { data, error } = await getUsers({ hasTeam: false });
   if (error) return [];
   return data;
 }

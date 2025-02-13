@@ -2,30 +2,29 @@ import {
   fetchTeamApplications,
   fetchUserInvites,
 } from "@/app/actions/fetch/interactions";
-import { getUserTeam } from "@/app/actions/fetch/teams";
+import { getTeamData } from "@/app/actions/fetch/teams";
+import { getUserProfile } from "@/app/actions/profile";
 import { ApplicationsToYourTeam } from "@/components/applications-to-your-team";
 import { CreateTeamForm } from "@/components/create-team-form";
 import { TeamInfo } from "@/components/team-info-profile";
 import { TeamInvitations } from "@/components/team-invitations";
 import { TeamMemberInfo } from "@/components/team-member-info";
+
 export default async function TeamPage() {
-  // Get team first to avoid circular reference
-  const teamResult = await getUserTeam();
+  // Get user profile which includes team_id and is_team_creator
+  const { data: userProfile } = await getUserProfile();
+  if (!userProfile) return null;
 
-  const [{ data: invites = [] }, { data: applications = [], error }] =
+  // Get team data if user has a team
+  const { data: teamResult } = await getTeamData(userProfile.team_id);
+
+  const [{ data: invites = [] }, { data: applications = [] }] =
     await Promise.all([
-      fetchUserInvites(),
-      teamResult
+      !userProfile.team_id ? fetchUserInvites() : Promise.resolve({ data: [] }),
+      userProfile.is_team_creator && teamResult
         ? fetchTeamApplications(teamResult.id)
-        : Promise.resolve({ data: [], error: null }),
+        : Promise.resolve({ data: [] }),
     ]);
-
-  const isTeamCreator =
-    teamResult?.creator_id ===
-    teamResult?.members?.find(
-      (m: { user_id: string | undefined }) =>
-        m.user_id === teamResult.creator_id
-    )?.user_id;
 
   return (
     <main className="min-h-screen w-full p-4 sm:py-8">
@@ -33,7 +32,7 @@ export default async function TeamPage() {
         <h1 className="text-2xl font-bold text-center mb-8">
           {!teamResult
             ? "You don't have a team yet !"
-            : isTeamCreator
+            : userProfile.is_team_creator
               ? "Manage your team !"
               : "This is your team"}
         </h1>
@@ -59,7 +58,7 @@ export default async function TeamPage() {
           <div className="space-y-8">
             <TeamInfo team={teamResult} />
             <TeamMemberInfo team={teamResult} />
-            {isTeamCreator && applications.length > 0 && (
+            {userProfile.is_team_creator && applications.length > 0 && (
               <div className="bg-card p-3 rounded-lg">
                 <ApplicationsToYourTeam team={teamResult} />
               </div>

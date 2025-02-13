@@ -8,7 +8,7 @@ export type User = {
   created_at: Date; // TIMESTAMPTZ, DEFAULT NOW()
   phone_number: string | null; // TEXT
   skills: string[] | null; // TEXT[]
-  has_team: boolean; // BOOLEAN, DEFAULT false
+  team_id: number | null; // INTEGER, REFERENCES teams(id)
   is_team_creator: boolean; // BOOLEAN, DEFAULT false
   links: {
     // JSONB

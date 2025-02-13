@@ -77,7 +77,7 @@ export function ProfileCard(props: { user: User }) {
           <CardTitle>{user.full_name}</CardTitle>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-        {!user.has_team && creatorTeamId && (
+        {!user.team_id && creatorTeamId && (
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">

@@ -11,11 +11,11 @@ export async function SearchPage() {
   const [{ data: teams, error }, { data: userData }] = await Promise.all([
     getTeams(),
     user
-      ? supabase.from("users").select("has_team").eq("id", user.id).single()
+      ? supabase.from("users").select("team_id").eq("id", user.id).single()
       : { data: null },
   ]);
 
-  const hasTeam = !!userData?.has_team;
+  const hasTeam = !!userData?.team_id;
 
   return (
     <div className="w-full max-w-6xl mx-auto py-8">

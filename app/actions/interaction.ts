@@ -18,11 +18,11 @@ export async function applyToTeam(application: InteractionRequest) {
   // Check if user already has a team
   const { data: userData } = await supabase
     .from("users")
-    .select("has_team")
+    .select("team_id")
     .eq("id", user.id)
     .single();
 
-  if (userData?.has_team) return { error: "You already have a team" };
+  if (userData?.team_id) return { error: "You already have a team" };
 
   // Check if user has already applied to this team
   const { data: existingInteraction } = await supabase
@@ -229,10 +229,10 @@ export async function respondToInteraction(
       if (!teamUpdateResult?.length)
         return { error: "Failed to update team members" };
 
-      // Update user's has_team status
+      // Update user's team status
       const { error: userError } = await supabase
         .from("users")
-        .update({ has_team: true })
+        .update({ team_id: interaction.team_involved_id })
         .eq("id", interaction.sender_id);
 
       if (userError) return { error: userError.message };
@@ -271,10 +271,10 @@ export async function respondToInteraction(
       if (!teamUpdateResult?.length)
         return { error: "Failed to update team members" };
 
-      // Update user's has_team status
+      // Update user's team status
       const { error: userError } = await supabase
         .from("users")
-        .update({ has_team: true })
+        .update({ team_id: interaction.team_involved_id })
         .eq("id", interaction.receiver_id);
 
       if (userError) return { error: userError.message };

@@ -55,16 +55,16 @@ export async function createTeam(teamData: TeamCreate) {
 
   if (teamError) return { error: teamError.message };
 
-  // Update user's has_team status and is_team_creator
-  const { error: userError } = await supabase
+  // Update user's team_id and is_team_creator
+  const { error: userUpdateError } = await supabase
     .from("users")
-    .update({ has_team: true, is_team_creator: true })
+    .update({ team_id: team.id, is_team_creator: true })
     .eq("id", user.id);
 
-  if (userError) {
+  if (userUpdateError) {
     // Rollback team creation
     await supabase.from("teams").delete().eq("id", team.id);
-    return { error: userError.message };
+    return { error: userUpdateError.message };
   }
 
   // TODO: Send email invites to pending_invites
@@ -122,7 +122,7 @@ export async function deleteTeam(teamId: number) {
   if (!team) return { error: "Team not found" };
   if (team.creator_id !== user.id) return { error: "Not authorized" };
 
-  // Update registered team members has_team status
+  // Update registered team members team_id status
   const registeredMembers = (team.members ?? ([] as TeamCreate["members"]))
     .filter(
       (m: { is_registered?: boolean; user_id?: string }) =>
@@ -131,12 +131,12 @@ export async function deleteTeam(teamId: number) {
     .map((m: { user_id: string }) => m.user_id);
 
   if (registeredMembers.length > 0) {
-    const { error: userError } = await supabase
+    const { error: updateMembersError } = await supabase
       .from("users")
-      .update({ has_team: false })
-      .in("id", registeredMembers);
+      .update({ team_id: null })
+      .eq("team_id", teamId);
 
-    if (userError) return { error: userError.message };
+    if (updateMembersError) return { error: updateMembersError.message };
   }
 
   // Update creator's is_team_creator status

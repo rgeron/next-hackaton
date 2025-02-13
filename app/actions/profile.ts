@@ -37,20 +37,19 @@ export async function createUserProfile(email: string) {
   try {
     const { data, error } = await supabase
       .from("users")
-      .insert([
-        {
-          id: user.id,
-          email,
-          full_name: "",
-          school: "X",
-          has_team: false,
-          is_team_creator: false,
-          bio: null,
-          phone_number: null,
-          links: { github: null, linkedin: null },
-          skills: [],
-        },
-      ])
+      .insert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata.full_name,
+        avatar_url: user.user_metadata.avatar_url,
+        team_id: null,
+        is_team_creator: false,
+        school: "X",
+        bio: null,
+        phone_number: null,
+        links: { github: null, linkedin: null },
+        skills: [],
+      })
       .select()
       .single();
 
