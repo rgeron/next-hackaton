@@ -26,36 +26,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const schools = ["X", "HEC", "ENSAE", "Centrale", "ENSTA"] as const;
-
-const technicalSkills = [
-  "JavaScript",
-  "TypeScript",
-  "React",
-  "Next.js",
-  "Node.js",
-  "Python",
-  "Git",
-  "REST APIs",
-  "GraphQL",
-  "SQL",
-  "NoSQL",
-  "Machine Learning",
-  "Data Science",
-  "Blockchain",
-] as const;
-
-const businessSkills = [
-  "Project Management",
-  "Product Management",
-  "Business Strategy",
-  "Marketing",
-  "Sales",
-] as const;
 
 const profileSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
-  school: z.enum(schools),
+  school: z.string().optional(),
   bio: z.string().optional(),
   phone_number: z.string().optional().or(z.literal("")),
   skills: z.array(z.string()).default([]),
@@ -65,6 +39,8 @@ const profileSchema = z.object({
   }),
 });
 
+const schools = ["X", "HEC", "ENSAE", "Centrale", "ENSTA"] as const;
+
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
@@ -72,7 +48,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       full_name: props.initialData?.full_name || "",
-      school: props.initialData?.school || "X",
+      school: props.initialData?.school || "",
       bio: props.initialData?.bio || "",
       phone_number: props.initialData?.phone_number ?? "",
       skills: props.initialData?.skills || [],
@@ -150,7 +126,7 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
                 <FormControl>
                   <Input
                     placeholder=". .   . .   . .   . .   . ."
-                    type="tel" 
+                    type="tel"
                     {...field}
                   />
                 </FormControl>
