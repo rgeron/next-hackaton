@@ -331,7 +331,7 @@ export function TeamInfo({
             <div className="space-y-4">
               <div>
                 <span className="font-medium block">Project Type</span>
-                <span className="text-muted-foreground block mt-2">
+                <span className="inline-block px-3 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full mt-2">
                   {team.project_type}
                 </span>
               </div>

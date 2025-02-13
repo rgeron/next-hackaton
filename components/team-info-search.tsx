@@ -51,27 +51,28 @@ export function TeamInfoSearch({
   };
 
   return (
-    <div className="p-4 space-y-4 border-2 rounded-md">
-      <div>
-        <h2 className="text-lg font-semibold">Team: {team.name}</h2>
-        <p className="mt-1 text-base font-semibold text-muted-foreground">
-          Project: {team.description}
-        </p>
+    <div className="p-6 space-y-6 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-card">
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold tracking-tight">{team.name}</h2>
+        <p className="text-sm text-muted-foreground">{team.description}</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div>
-          <span className="font-medium">Project Type:</span>
-          <span className="ml-2">{team.project_type}</span>
+          <span className="inline-block px-3 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+            {team.project_type}
+          </span>
         </div>
 
         <div>
-          <span className="font-medium">Looking for:</span>
-          <div className="flex flex-wrap gap-2 mt-2">
+          <span className="text-sm font-medium text-muted-foreground mb-2 block">
+            Looking for
+          </span>
+          <div className="flex flex-wrap gap-2">
             {team.looking_for.map((role) => (
               <span
                 key={role}
-                className="px-2 py-1 bg-secondary rounded-md text-sm"
+                className="px-2.5 py-1 bg-secondary/50 rounded-full text-xs font-medium"
               >
                 {role}
               </span>
@@ -79,9 +80,9 @@ export function TeamInfoSearch({
           </div>
         </div>
 
-        <div>
-          <span className="font-medium">Team Size:</span>
-          <span className="ml-2">
+        <div className="flex items-center text-sm">
+          <span className="text-muted-foreground">Team Size:</span>
+          <span className="ml-2 font-medium">
             {team.members.length} / {team.max_members} members
           </span>
         </div>
@@ -100,6 +101,7 @@ export function TeamInfoSearch({
                   placeholder="Tell us why you'd like to join this team..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  className="min-h-[120px]"
                 />
                 <Button
                   className="w-full"
