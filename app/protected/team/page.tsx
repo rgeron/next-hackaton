@@ -56,7 +56,10 @@ export default async function TeamPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            <TeamInfo team={teamResult} />
+            <TeamInfo
+              team={teamResult}
+              isTeamCreator={userProfile.is_team_creator}
+            />
             <TeamMemberInfo team={teamResult} />
             {userProfile.is_team_creator && applications.length > 0 && (
               <div className="bg-card p-3 rounded-lg">

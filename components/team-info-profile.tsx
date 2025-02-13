@@ -130,7 +130,13 @@ function AddTeamMemberButton(props: {
   );
 }
 
-export function TeamInfo({ team }: { team: Team }) {
+export function TeamInfo({
+  team,
+  isTeamCreator,
+}: {
+  team: Team;
+  isTeamCreator: boolean;
+}) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingMember, setIsAddingMember] = useState(false);
@@ -141,9 +147,6 @@ export function TeamInfo({ team }: { team: Team }) {
     project_type: team.project_type as TeamCreate["project_type"],
     looking_for: team.looking_for || [],
   });
-  const isTeamCreator =
-    team.creator_id ===
-    team.members.find((m) => m.user_id === team.creator_id)?.user_id;
 
   const handleDeleteTeam = async () => {
     if (!team?.id) {
