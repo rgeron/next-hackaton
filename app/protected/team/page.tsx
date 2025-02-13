@@ -5,9 +5,9 @@ import {
 import { getUserTeam } from "@/app/actions/team";
 import { ApplicationsToYourTeam } from "@/components/applications-to-your-team";
 import { CreateTeamForm } from "@/components/create-team-form";
+import { TeamInfo } from "@/components/team-info-profile";
 import { TeamInvitations } from "@/components/team-invitations";
 import { TeamMemberInfo } from "@/components/team-member-info";
-import { TeamInfo } from "@/components/team-info-profile";
 export default async function TeamPage() {
   // Get team first to avoid circular reference
   const teamResult = await getUserTeam();
@@ -20,6 +20,7 @@ export default async function TeamPage() {
         : Promise.resolve({ data: [], error: null }),
     ]);
 
+  console.log("Debug - Team Invitations:", { invites });
   const isTeamCreator =
     teamResult?.creator_id ===
     teamResult?.members?.find(
