@@ -29,25 +29,6 @@ export async function getUsers(filters?: {
   return { data };
 }
 
-export async function getUser(userId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("users")
-    .select(
-      `
-      *,
-      teams!team_members(id, name, description, project_type),
-      applications(id, team_id, message, status, teams(id, name, description))
-    `
-    )
-    .eq("id", userId)
-    .single();
-
-  if (error) return { error: error.message };
-  return { data };
-}
-
 export async function getUsersByIds(userIds: string[]) {
   const supabase = await createClient();
 

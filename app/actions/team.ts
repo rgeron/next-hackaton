@@ -23,7 +23,6 @@ export type TeamInvite = {
   invited_at: string;
 };
 
-
 export async function createTeam(teamData: TeamCreate) {
   const supabase = await createClient();
 

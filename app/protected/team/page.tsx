@@ -2,7 +2,7 @@ import {
   fetchTeamApplications,
   fetchUserInvites,
 } from "@/app/actions/fetch/interactions";
-import { getUserTeam } from "@/app/actions/team";
+import { getUserTeam } from "@/app/actions/fetch/teams";
 import { ApplicationsToYourTeam } from "@/components/applications-to-your-team";
 import { CreateTeamForm } from "@/components/create-team-form";
 import { TeamInfo } from "@/components/team-info-profile";
@@ -20,7 +20,6 @@ export default async function TeamPage() {
         : Promise.resolve({ data: [], error: null }),
     ]);
 
-  console.log("Debug - Team Invitations:", { invites });
   const isTeamCreator =
     teamResult?.creator_id ===
     teamResult?.members?.find(
