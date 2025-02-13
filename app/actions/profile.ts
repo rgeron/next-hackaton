@@ -40,11 +40,10 @@ export async function createUserProfile(email: string) {
       .insert({
         id: user.id,
         email: user.email,
-        full_name: user.user_metadata.full_name,
-        avatar_url: user.user_metadata.avatar_url,
+        full_name: null,
         team_id: null,
         is_team_creator: false,
-        school: "X",
+        school: null,
         bio: null,
         phone_number: null,
         links: { github: null, linkedin: null },
