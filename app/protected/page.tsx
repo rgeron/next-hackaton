@@ -38,26 +38,6 @@ export default async function ProtectedPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Quick Navigation</CardTitle>
-            <CardDescription>
-              Access key features of the platform
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/protected/search-profile">🔍 Find Team Members</Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/protected/search-team">👥 Explore Teams</Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/protected/profile">👤 Update Your Profile</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
             <CardTitle>Hackathon Registration</CardTitle>
             <CardDescription>
               Submit your team for the on-site event at HEC Paris

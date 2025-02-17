@@ -37,6 +37,17 @@ export default async function TeamPage() {
               : "This is your team"}
         </h1>
 
+        {userProfile.is_team_creator && teamResult && (
+          <div className="mb-8 flex justify-center">
+            <a
+              href="/protected/team/apply"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Apply to the hackathon with this team
+            </a>
+          </div>
+        )}
+
         {!teamResult ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {invites.length > 0 && (
