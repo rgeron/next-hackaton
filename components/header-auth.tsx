@@ -2,7 +2,7 @@
 
 import { signOutAction } from "@/app/actions/auth";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/utils/supabase/client";
 import { Building2, Menu, Search, UserCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,55 +17,38 @@ import {
 
 export function HeaderAuth() {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+    const fetchUser = async () => {
+      const supabase = await createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
+      setLoading(false);
     };
-    getUser();
+
+    fetchUser();
   }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   if (!hasEnvVars) {
     return (
-      <>
-        <div className="flex gap-4 items-center">
-          <div>
-            <Badge
-              variant={"default"}
-              className="font-normal pointer-events-none"
-            >
-              Please update .env.local file with anon key and url
-            </Badge>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              asChild
-              size="sm"
-              variant={"outline"}
-              disabled
-              className="opacity-75 cursor-none pointer-events-none"
-            >
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              variant={"default"}
-              disabled
-              className="opacity-75 cursor-none pointer-events-none"
-            >
-              <Link href="/sign-up">Sign up</Link>
-            </Button>
-          </div>
+      <div className="flex gap-4 items-center">
+        <Badge variant={"default"} className="font-normal pointer-events-none">
+          Please update .env.local file with anon key and url
+        </Badge>
+        <div className="flex gap-2">
+          <Button asChild size="sm" variant={"outline"} disabled>
+            <Link href="/sign-in">Sign in</Link>
+          </Button>
+          <Button asChild size="sm" variant={"default"} disabled>
+            <Link href="/sign-up">Sign up</Link>
+          </Button>
         </div>
-      </>
+      </div>
     );
   }
 
