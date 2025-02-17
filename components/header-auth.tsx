@@ -3,7 +3,7 @@
 import { signOutAction } from "@/app/actions/auth";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { createBrowserClient } from "@supabase/ssr";
-import { Home, Menu } from "lucide-react";
+import { Building2, Menu, Search, UserCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
@@ -70,11 +70,26 @@ export function HeaderAuth() {
   }
 
   const menuItems = [
-    { href: "/protected", label: "Home", icon: <Home className="h-4 w-4" /> },
-    { href: "/protected/search-profile", label: "Search Profiles" },
-    { href: "/protected/search-team", label: "Search Teams" },
-    { href: "/protected/team", label: "My Team" },
-    { href: "/protected/profile", label: "My Profile" },
+    {
+      href: "/protected/search-profile",
+      label: "Search Profiles",
+      icon: <Search className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/search-team",
+      label: "Search Teams",
+      icon: <Users className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/team",
+      label: "My Team",
+      icon: <Building2 className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/profile",
+      label: "My Profile",
+      icon: <UserCircle className="h-4 w-4" />,
+    },
   ];
 
   return user ? (
