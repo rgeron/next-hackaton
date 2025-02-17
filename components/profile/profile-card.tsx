@@ -2,8 +2,8 @@
 
 import { inviteToTeam } from "@/app/actions/interaction";
 import { isTeamCreator } from "@/app/actions/user";
+import { ProfileSkills } from "@/components/profile/profile-skills";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,7 +14,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { skills } from "@/lib/data/skills";
 import { User } from "@/lib/types/database.types";
 import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -85,16 +84,7 @@ export function ProfileCard(props: { user: User }) {
             <p className="text-sm text-muted-foreground">{user.bio}</p>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            {user.skills?.map((skillId: string) => {
-              const skill = skills.find((s) => s.id === skillId);
-              return (
-                <Badge key={skillId} variant="secondary">
-                  {skill?.name || skillId}
-                </Badge>
-              );
-            })}
-          </div>
+          <ProfileSkills skillIds={user.skills || []} />
 
           <div className="grid gap-2 text-sm">
             <div className="flex items-center gap-2">
