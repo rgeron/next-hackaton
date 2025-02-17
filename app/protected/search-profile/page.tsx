@@ -1,5 +1,5 @@
 import { getUsersWithoutTeam } from "@/app/actions/fetch/users";
-import { ProfileCard } from "@/components/profile-card";
+import { ProfileCard } from "@/components/profile/profile-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function SearchProfilePage() {

@@ -1,16 +1,36 @@
+"use client";
+
 import { signOutAction } from "@/app/actions/auth";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import { createClient } from "@/utils/supabase/server";
+import { createBrowserClient } from "@supabase/ssr";
+import { Home, Menu } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
-export default async function AuthButton() {
-  const supabase = await createClient();
+export function HeaderAuth() {
+  const [user, setUser] = useState<any>(null);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   if (!hasEnvVars) {
     return (
@@ -48,23 +68,53 @@ export default async function AuthButton() {
       </>
     );
   }
+
+  const menuItems = [
+    { href: "/protected", label: "Home", icon: <Home className="h-4 w-4" /> },
+    { href: "/protected/search-profile", label: "Search Profiles" },
+    { href: "/protected/search-team", label: "Search Teams" },
+    { href: "/protected/team", label: "My Team" },
+    { href: "/protected/profile", label: "My Profile" },
+  ];
+
   return user ? (
     <div className="flex items-center gap-4">
-      <div className="flex items-center gap-4 mr-4">
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/search-profile">Search Profiles</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/search-team">Search Teams</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/team">My Team</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/profile">My Profile</Link>
-        </Button>
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-4 mr-4">
+        {menuItems.map((item) => (
+          <Button key={item.href} asChild variant="ghost" size="sm">
+            <Link href={item.href} className="flex items-center gap-2">
+              {item.icon}
+              {item.label}
+            </Link>
+          </Button>
+        ))}
       </div>
-      <span className="text-muted-foreground">{user.email}</span>
+
+      {/* Mobile Menu */}
+      <div className="md:hidden mr-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {menuItems.map((item) => (
+              <DropdownMenuItem key={item.href} asChild>
+                <Link
+                  href={item.href}
+                  className="w-full cursor-pointer flex items-center gap-2"
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <form action={signOutAction}>
         <Button type="submit" variant="outline" size="sm">
           Sign out

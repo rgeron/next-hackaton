@@ -1,5 +1,5 @@
 import { getTeams } from "@/app/actions/fetch/teams";
-import { TeamInfoSearch } from "@/components/team-info-search";
+import { TeamInfoSearch } from "@/components/team/team-info-search";
 import { createClient } from "@/utils/supabase/server";
 
 export async function SearchPage() {

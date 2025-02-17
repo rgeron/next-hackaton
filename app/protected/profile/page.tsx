@@ -1,5 +1,5 @@
 import { getUserProfile } from "@/app/actions/profile";
-import { ProfileForm } from "@/components/profile-form";
+import { ProfileForm } from "@/components/profile/profile-form";
 
 export default async function ProfilePage() {
   const { data: profile } = await getUserProfile();

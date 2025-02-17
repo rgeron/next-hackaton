@@ -4,15 +4,9 @@ import { applyToTeam } from "@/app/actions/interaction";
 import { Team } from "@/lib/types/database.types";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Textarea } from "./ui/textarea";
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Textarea } from "../ui/textarea";
 
 export function TeamInfoSearch({
   team,

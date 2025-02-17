@@ -4,11 +4,11 @@ import {
 } from "@/app/actions/fetch/interactions";
 import { getTeamData } from "@/app/actions/fetch/teams";
 import { getUserProfile } from "@/app/actions/profile";
-import { ApplicationsToYourTeam } from "@/components/applications-to-your-team";
-import { CreateTeamForm } from "@/components/create-team-form";
-import { TeamInfo } from "@/components/team-info-profile";
-import { TeamInvitations } from "@/components/team-invitations";
-import { TeamMemberInfo } from "@/components/team-member-info";
+import { ApplicationsToYourTeam } from "@/components/team/applications-to-your-team";
+import { CreateTeamForm } from "@/components/team/create-team-form";
+import { TeamInfo } from "@/components/team/team-info-profile";
+import { TeamInvitations } from "@/components/team/team-invitations";
+import { TeamMemberInfo } from "@/components/team/team-member-info";
 
 export default async function TeamPage() {
   // Get user profile which includes team_id and is_team_creator

@@ -6,8 +6,8 @@ import { Team } from "@/lib/types/database.types";
 import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 type ApplicationWithUser = {
   id: number;
