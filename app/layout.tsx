@@ -1,12 +1,12 @@
 import { EnvVarWarning } from "@/components/from-next/env-var-warning";
 import { ThemeSwitcher } from "@/components/from-next/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import HeaderAuth from "@/components/header-auth";
 import { ThemeProvider } from "next-themes";
 import { Geist } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { HeaderAuth } from "@/components/header-auth";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

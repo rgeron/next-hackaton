@@ -1,12 +1,19 @@
 import { signOutAction } from "@/app/actions/auth";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { createClient } from "@/utils/supabase/server";
-import { Building2, Search, UserCircle, Users } from "lucide-react";
+import { Building2, Menu, Search, UserCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
-export default async function HeaderAuth() {
+export async function HeaderAuth() {
   const supabase = await createClient();
 
   const {
@@ -74,7 +81,8 @@ export default async function HeaderAuth() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      <div className="flex items-center gap-4 mr-4">
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-4 mr-4">
         {menuItems.map(({ href, label, icon }) => (
           <Button asChild variant="ghost" size="sm" key={label}>
             <Link href={href} className="flex items-center gap-2">
@@ -84,7 +92,34 @@ export default async function HeaderAuth() {
           </Button>
         ))}
       </div>
-      <span className="text-muted-foreground">{user.email}</span>
+      {/* Mobile Menu */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col gap-2 mt-4">
+              {menuItems.map(({ href, label, icon }) => (
+                <Button asChild variant="ghost" size="sm" key={label}>
+                  <Link
+                    href={href}
+                    className="flex items-center gap-2 justify-start"
+                  >
+                    {icon}
+                    {label}
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
       <form action={signOutAction}>
         <Button type="submit" variant="outline" size="sm">
           Sign out
