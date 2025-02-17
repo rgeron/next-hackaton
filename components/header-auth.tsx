@@ -1,6 +1,7 @@
 import { signOutAction } from "@/app/actions/auth";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { createClient } from "@/utils/supabase/server";
+import { Building2, Search, UserCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -11,6 +12,29 @@ export default async function HeaderAuth() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const menuItems = [
+    {
+      href: "/protected/search-profile",
+      label: "Search Profiles",
+      icon: <Search className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/search-team",
+      label: "Search Teams",
+      icon: <Users className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/team",
+      label: "My Team",
+      icon: <Building2 className="h-4 w-4" />,
+    },
+    {
+      href: "/protected/profile",
+      label: "My Profile",
+      icon: <UserCircle className="h-4 w-4" />,
+    },
+  ];
 
   if (!hasEnvVars) {
     return (
@@ -51,18 +75,14 @@ export default async function HeaderAuth() {
   return user ? (
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-4 mr-4">
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/search-profile">Search Profiles</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/search-team">Search Teams</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/team">My Team</Link>
-        </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/protected/profile">My Profile</Link>
-        </Button>
+        {menuItems.map(({ href, label, icon }) => (
+          <Button asChild variant="ghost" size="sm" key={label}>
+            <Link href={href} className="flex items-center gap-2">
+              {icon}
+              {label}
+            </Link>
+          </Button>
+        ))}
       </div>
       <span className="text-muted-foreground">{user.email}</span>
       <form action={signOutAction}>
