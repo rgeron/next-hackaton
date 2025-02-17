@@ -124,9 +124,17 @@ export function ProfileForm(props: { initialData?: ProfileFormValues | null }) {
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=". .   . .   . .   . .   . ."
+                    placeholder="00 00 00 00 00"
                     type="tel"
                     {...field}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      const formattedValue = value
+                        .match(/.{1,2}/g)
+                        ?.join(' ') || '';
+                      field.onChange(formattedValue.slice(0, 14)); // Limit to 10 digits + 4 spaces
+                    }}
+                    maxLength={14}
                   />
                 </FormControl>
                 <FormMessage />
