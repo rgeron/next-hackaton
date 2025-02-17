@@ -56,9 +56,6 @@ export function TeamInvitations(props: { invites: InteractionWithDetails[] }) {
                   Message: {invite.message}
                 </p>
               )}
-              <p className="text-sm text-muted-foreground">
-                Invited: {new Date(invite.created_at).toLocaleDateString()}
-              </p>
             </div>
             <div className="flex gap-2">
               <Button
