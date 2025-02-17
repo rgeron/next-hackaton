@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect } from "react";
 
 const schools = ["X", "HEC", "ENSAE", "Centrale", "ENSTA"] as const;
 
@@ -19,29 +19,37 @@ type Filters = {
 
 export function ProfileFilters(props: {
   onChange: (filters: Filters) => void;
+  initialSchool: string;
+  initialSkills: string[];
 }) {
-  const [selectedSchool, setSelectedSchool] = useState<string>("all");
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  useEffect(() => {
+    // Sync initial URL state
+    props.onChange({
+      school: props.initialSchool === "all" ? undefined : props.initialSchool,
+      skills: props.initialSkills,
+    });
+  }, []);
 
   const handleSchoolChange = (value: string) => {
-    setSelectedSchool(value);
     props.onChange({
       school: value === "all" ? undefined : value,
-      skills: selectedSkills,
+      skills: props.initialSkills,
     });
   };
 
   const handleSkillsChange = (value: string[]) => {
-    setSelectedSkills(value);
     props.onChange({
-      school: selectedSchool === "all" ? undefined : selectedSchool,
+      school: props.initialSchool === "all" ? undefined : props.initialSchool,
       skills: value,
     });
   };
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <Select value={selectedSchool} onValueChange={handleSchoolChange}>
+      <Select
+        value={props.initialSchool || "all"}
+        onValueChange={handleSchoolChange}
+      >
         <SelectTrigger className="w-full sm:w-[200px]">
           <SelectValue placeholder="Select school" />
         </SelectTrigger>
@@ -57,7 +65,7 @@ export function ProfileFilters(props: {
 
       <div className="flex-1">
         <SearchSkills
-          selectedSkills={selectedSkills}
+          selectedSkills={props.initialSkills}
           onSkillsChange={handleSkillsChange}
         />
       </div>
