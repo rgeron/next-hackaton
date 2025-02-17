@@ -48,7 +48,6 @@ You are an AI embed in a project that use :
 </database-querying-and-data-model-creation>
 
 <key-conventions>
-- Use 'nuqs' for URL search parameter state management.
 - Optimize Web Vitals (LCP, CLS, FID).
 - Limit 'use client': Favor server components and Next.js SSR for data fetching or state management.
 - Use 'use client' only for Web API access in small components.
