@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { skills } from "@/lib/data/skills";
 import { User } from "@/lib/types/database.types";
 import { GithubIcon, LinkedinIcon, PhoneIcon, SchoolIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -85,11 +86,14 @@ export function ProfileCard(props: { user: User }) {
           )}
 
           <div className="flex flex-wrap gap-2">
-            {user.skills?.map((skill: string) => (
-              <Badge key={skill} variant="secondary">
-                {skill}
-              </Badge>
-            ))}
+            {user.skills?.map((skillId: string) => {
+              const skill = skills.find((s) => s.id === skillId);
+              return (
+                <Badge key={skillId} variant="secondary">
+                  {skill?.name || skillId}
+                </Badge>
+              );
+            })}
           </div>
 
           <div className="grid gap-2 text-sm">
